@@ -9,9 +9,9 @@ const SUBJECTS = ['IQ', 'GK'];
 const YEARS    = [2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024];
 
 function getPaperConfig(year) {
-  return year >= 2023
-    ? { questions: 50, seconds: 3600 }          // 1 hr
-    : { questions: 60, seconds: 5400 };          // 1.5 hr
+  return year === 2022
+    ? { questions: 60, seconds: 5400 }          // 1.5 hr
+    : { questions: 50, seconds: 3600 };          // 1 hr
 }
 
 const LS = {
