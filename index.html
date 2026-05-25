@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0d0d0f" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>SLC Entrance — Past Papers</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ═══════════════════════════════ HOME SCREEN ═══════════════════════════════ -->
+  <div id="screen-home" class="screen active">
+    <div class="home-wrap">
+      <div class="home-header">
+        <div class="app-logo">
+          <span class="logo-icon">⚖</span>
+        </div>
+        <h1 class="app-title">SLC Entrance</h1>
+        <p class="app-sub">Past Paper Practice</p>
+      </div>
+
+      <div class="card selector-card">
+        <label class="field-label">Subject</label>
+        <div class="pill-group" id="subject-pills">
+          <button class="pill active" data-value="IQ">IQ</button>
+          <button class="pill" data-value="GK">GK</button>
+        </div>
+
+        <label class="field-label mt">Year</label>
+        <div class="year-grid" id="year-grid"></div>
+      </div>
+
+      <div class="card paper-info-card" id="paper-info">
+        <div class="info-row">
+          <span class="info-label">Questions</span>
+          <span class="info-val" id="info-questions">—</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Duration</span>
+          <span class="info-val" id="info-duration">—</span>
+        </div>
+        <div class="info-row" id="info-resume-row" style="display:none">
+          <span class="info-label">Session</span>
+          <span class="info-val resume-badge">Resume available</span>
+        </div>
+      </div>
+
+      <button class="btn-primary" id="btn-start">▶ Start Paper</button>
+      <button class="btn-ghost" id="btn-history">History</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ PAPER SCREEN ═══════════════════════════════ -->
+  <div id="screen-paper" class="screen">
+
+    <!-- Sticky header -->
+    <div class="paper-header" id="paper-header">
+      <div class="paper-meta">
+        <span id="ph-subject" class="ph-subject"></span>
+        <span id="ph-year" class="ph-year"></span>
+      </div>
+      <div class="timer-block" id="timer-block">
+        <span id="timer-display" class="timer-normal">00:00:00</span>
+        <button class="timer-btn" id="btn-pause-resume" title="Pause/Resume">⏸</button>
+      </div>
+      <div class="ph-progress">
+        <span id="ph-progress-text">0 / 0</span>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" id="progress-bar-fill"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Question list -->
+    <div class="questions-scroll" id="questions-scroll">
+      <div class="questions-list" id="questions-list"></div>
+      <div class="paper-foot">
+        <button class="btn-primary btn-complete" id="btn-complete">Complete Paper</button>
+      </div>
+    </div>
+
+    <!-- Floating navigator -->
+    <div class="nav-fab" id="nav-fab">
+      <button class="nav-fab-btn" id="nav-fab-toggle" title="Question Navigator">#</button>
+    </div>
+    <div class="nav-drawer" id="nav-drawer">
+      <div class="nav-drawer-header">
+        <span class="nav-drawer-title">Questions</span>
+        <button class="nav-close" id="nav-close">✕</button>
+      </div>
+      <div class="nav-grid" id="nav-grid"></div>
+      <div class="nav-legend">
+        <span class="leg answered"></span> Answered
+        <span class="leg unanswered"></span> Unanswered
+      </div>
+    </div>
+    <div class="nav-overlay" id="nav-overlay"></div>
+  </div>
+
+  <!-- ═══════════════════════════════ MARKING SCREEN ═══════════════════════════════ -->
+  <div id="screen-marking" class="screen">
+    <div class="marking-header">
+      <div class="marking-title-row">
+        <h2 class="marking-title">Self-Marking</h2>
+        <div class="marking-meta-sub" id="marking-meta"></div>
+      </div>
+      <div class="marking-instruction">
+        <span class="inst-item"><span class="dot green"></span>Single tap = Correct</span>
+        <span class="inst-item"><span class="dot red"></span>Double tap = Incorrect</span>
+        <span class="inst-item"><span class="dot neutral"></span>Triple tap = Reset</span>
+      </div>
+    </div>
+
+    <div class="marking-summary-bar" id="marking-summary-bar">
+      <div class="ms-item correct"><span class="ms-num" id="ms-correct">0</span><span class="ms-lbl">Correct</span></div>
+      <div class="ms-item incorrect"><span class="ms-num" id="ms-incorrect">0</span><span class="ms-lbl">Incorrect</span></div>
+      <div class="ms-item unmarked"><span class="ms-num" id="ms-unmarked">0</span><span class="ms-lbl">Unmarked</span></div>
+    </div>
+
+    <div class="marking-list" id="marking-list"></div>
+
+    <div class="marking-foot">
+      <button class="btn-primary" id="btn-marking-done">✅ Marking Completed</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ RESULTS SCREEN ═══════════════════════════════ -->
+  <div id="screen-results" class="screen">
+    <div class="results-wrap">
+      <div class="results-header">
+        <span class="results-subject" id="res-subject"></span>
+        <span class="results-year" id="res-year"></span>
+      </div>
+
+      <div class="score-ring-wrap">
+        <svg class="score-ring" viewBox="0 0 120 120">
+          <circle class="ring-track" cx="60" cy="60" r="50"/>
+          <circle class="ring-fill" id="ring-fill" cx="60" cy="60" r="50"
+            stroke-dasharray="314" stroke-dashoffset="314"/>
+        </svg>
+        <div class="score-ring-text">
+          <span class="score-pct" id="res-pct">0%</span>
+          <span class="score-frac" id="res-frac">0/0</span>
+        </div>
+      </div>
+
+      <div class="perf-label" id="res-perf-label"></div>
+
+      <div class="card results-stats">
+        <div class="stat-row">
+          <span class="stat-label">Correct</span>
+          <span class="stat-val green" id="res-correct"></span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Incorrect</span>
+          <span class="stat-val red" id="res-incorrect"></span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Unmarked</span>
+          <span class="stat-val muted" id="res-unmarked"></span>
+        </div>
+        <div class="divider"></div>
+        <div class="stat-row">
+          <span class="stat-label">Time taken</span>
+          <span class="stat-val" id="res-time"></span>
+        </div>
+        <div class="stat-row" id="res-overtime-row" style="display:none">
+          <span class="stat-label">Overtime</span>
+          <span class="stat-val red" id="res-overtime"></span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Date</span>
+          <span class="stat-val muted" id="res-date"></span>
+        </div>
+      </div>
+
+      <button class="btn-primary" id="btn-res-home">Back to Home</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ HISTORY SCREEN ═══════════════════════════════ -->
+  <div id="screen-history" class="screen">
+    <div class="history-header">
+      <button class="back-btn" id="btn-history-back">←</button>
+      <h2 class="history-title">Attempt History</h2>
+    </div>
+
+    <div class="history-stats-bar" id="history-stats-bar"></div>
+
+    <div class="history-list" id="history-list"></div>
+    <div class="history-empty" id="history-empty" style="display:none">
+      <p>No attempts yet.</p>
+      <p class="muted-text">Complete a paper to see your history.</p>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
