@@ -3,138 +3,1213 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta name="theme-color" content="#0d0d0f" />
+  <meta name="theme-color" content="#0a0a0d" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <title>SLLC Entrance — Past Papers</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta name="description" content="SLLC Law College Entrance — Past Paper Practice" />
+  <title>SLLC Entrance · Past Papers</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet" />
+  <!-- Firebase v9 compat (replace CDN version if needed) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<style>
+/* ══════════════════════════════════════════════════════════
+   SLLC Entrance v3 — Production Rebuild
+   Mobile-first · Firebase-synced · Crash-proof · Offline-first
+══════════════════════════════════════════════════════════ */
+
+/* ─── CSS Variables — Dark (default) ─── */
+:root {
+  --bg:          #0a0a0d;
+  --bg-card:     #13131a;
+  --bg-ele:      #1b1b24;
+  --bg-hover:    #22222e;
+  --bg-input:    #1e1e28;
+  --border:      #272736;
+  --border-lo:   #1d1d2a;
+  --border-hi:   #363650;
+
+  --text:        #eaeaf4;
+  --text-muted:  #787898;
+  --text-dim:    #44445a;
+
+  --accent:      #5e7ce6;
+  --accent-lo:   rgba(94,124,230,.12);
+  --accent-md:   rgba(94,124,230,.22);
+  --accent-hi:   rgba(94,124,230,.35);
+
+  --green:       #3dba78;
+  --green-lo:    rgba(61,186,120,.12);
+  --green-md:    rgba(61,186,120,.22);
+  --red:         #e05c5c;
+  --red-lo:      rgba(224,92,92,.12);
+  --red-md:      rgba(224,92,92,.22);
+  --amber:       #d4891a;
+  --amber-lo:    rgba(212,137,26,.12);
+  --amber-md:    rgba(212,137,26,.22);
+
+  --glass-bg:    rgba(10,10,13,.94);
+  --overlay-bg:  rgba(0,0,0,.65);
+  --fab-shadow:  0 4px 20px rgba(0,0,0,.50);
+
+  --radius-xs: 5px;
+  --radius-sm: 8px;
+  --radius:    12px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+
+  --safe-bot: env(safe-area-inset-bottom, 20px);
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-l:   env(safe-area-inset-left, 0px);
+  --safe-r:   env(safe-area-inset-right, 0px);
+
+  --transition: .2s cubic-bezier(.4,0,.2,1);
+}
+
+/* ─── Light mode ─── */
+body.light {
+  --bg:          #f0f0f5;
+  --bg-card:     #ffffff;
+  --bg-ele:      #e8e8f0;
+  --bg-hover:    #dcdce8;
+  --bg-input:    #ededf5;
+  --border:      #d0d0e0;
+  --border-lo:   #e2e2ee;
+  --border-hi:   #b8b8d0;
+  --text:        #18182e;
+  --text-muted:  #626280;
+  --text-dim:    #9898b8;
+  --accent:      #4568d1;
+  --accent-lo:   rgba(69,104,209,.09);
+  --accent-md:   rgba(69,104,209,.20);
+  --accent-hi:   rgba(69,104,209,.35);
+  --green:       #2a9d5c;
+  --green-lo:    rgba(42,157,92,.09);
+  --green-md:    rgba(42,157,92,.20);
+  --red:         #c93535;
+  --red-lo:      rgba(201,53,53,.09);
+  --red-md:      rgba(201,53,53,.20);
+  --amber:       #b86e0a;
+  --amber-lo:    rgba(184,110,10,.09);
+  --amber-md:    rgba(184,110,10,.20);
+  --glass-bg:    rgba(240,240,245,.94);
+  --overlay-bg:  rgba(0,0,0,.35);
+  --fab-shadow:  0 4px 20px rgba(0,0,0,.16);
+}
+
+/* ─── Reset ─── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; -webkit-text-size-adjust: 100%; height: 100%; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100dvh;
+  overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+  transition: background var(--transition), color var(--transition);
+}
+
+button { font-family: inherit; cursor: pointer; border: none; background: none; -webkit-tap-highlight-color: transparent; outline: none; }
+input  { font-family: inherit; outline: none; }
+a { color: inherit; text-decoration: none; }
+
+/* ─── Screen System ─── */
+.screen { display: none; min-height: 100dvh; width: 100%; }
+.screen.active { display: block; animation: screenIn .22s ease; }
+@keyframes screenIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+/* ─── Shared Components ─── */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+}
+
+.btn-primary {
+  display: block; width: 100%;
+  padding: 14px 20px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 15px; font-weight: 600;
+  border-radius: var(--radius);
+  letter-spacing: .01em;
+  text-align: center;
+  transition: opacity .15s, transform .1s, box-shadow .15s;
+  box-shadow: 0 2px 12px rgba(94,124,230,.3);
+}
+.btn-primary:active { opacity:.85; transform:scale(.985); }
+.btn-primary:disabled { opacity:.35; pointer-events:none; }
+
+.btn-ghost {
+  display: block; width: 100%;
+  padding: 13px 20px;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 14px; font-weight: 500;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  text-align: center;
+  transition: background var(--transition), color var(--transition), border-color var(--transition);
+}
+.btn-ghost:active { background: var(--bg-ele); color: var(--text); }
+
+.btn-danger {
+  display: block; width: 100%;
+  padding: 13px 20px;
+  background: var(--red-lo);
+  color: var(--red);
+  font-size: 14px; font-weight: 600;
+  border-radius: var(--radius);
+  border: 1px solid var(--red-md);
+  text-align: center;
+  transition: all .15s;
+}
+.btn-danger:active { opacity:.8; }
+
+.field-label {
+  display: block;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: .11em; text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 10px;
+}
+.field-label.mt { margin-top: 18px; }
+
+.divider { height:1px; background:var(--border-lo); margin:12px 0; }
+
+.badge {
+  display: inline-flex; align-items: center;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: .09em; text-transform: uppercase;
+  padding: 2px 8px; border-radius: 20px;
+}
+.badge-accent { background: var(--accent-lo); color: var(--accent); }
+.badge-green  { background: var(--green-lo);  color: var(--green); }
+.badge-red    { background: var(--red-lo);    color: var(--red); }
+.badge-amber  { background: var(--amber-lo);  color: var(--amber); }
+
+/* ─── Sync / Save Indicator ─── */
+#sync-indicator {
+  position: fixed;
+  top: calc(12px + var(--safe-top));
+  left: 50%; transform: translateX(-50%);
+  z-index: 9000;
+  font-size: 11px; font-weight: 600;
+  padding: 5px 14px;
+  border-radius: 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .25s;
+  white-space: nowrap;
+  display: flex; align-items: center; gap: 6px;
+}
+#sync-indicator.show { opacity: 1; }
+#sync-indicator.saving  { color: var(--amber); border-color: var(--amber-md); }
+#sync-indicator.saved   { color: var(--green); border-color: var(--green-md); }
+#sync-indicator.synced  { color: var(--accent); border-color: var(--accent-hi); }
+#sync-indicator.offline { color: var(--red); border-color: var(--red-md); }
+#sync-indicator.failed  { color: var(--red); border-color: var(--red-md); }
+.sync-dot {
+  width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+  background: currentColor;
+}
+
+/* ─── Theme Toggle ─── */
+.theme-toggle {
+  position: fixed;
+  top: calc(12px + var(--safe-top));
+  right: calc(16px + var(--safe-r));
+  z-index: 9999;
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all var(--transition);
+  box-shadow: var(--fab-shadow);
+}
+.theme-toggle:active { transform: scale(.88); }
+.theme-toggle:hover  { background: var(--bg-hover); color: var(--text); }
+
+/* ─── Modal System ─── */
+.modal-overlay {
+  position: fixed; inset: 0;
+  z-index: 8000;
+  background: var(--overlay-bg);
+  display: flex; align-items: flex-end; justify-content: center;
+  padding: 0 16px calc(var(--safe-bot) + 8px);
+  opacity: 0; visibility: hidden;
+  transition: opacity .22s, visibility .22s;
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+}
+.modal-overlay.open { opacity: 1; visibility: visible; }
+.modal-sheet {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 24px 20px 20px;
+  width: 100%; max-width: 480px;
+  transform: translateY(24px);
+  transition: transform .25s cubic-bezier(.34,1.56,.64,1);
+}
+.modal-overlay.open .modal-sheet { transform: translateY(0); }
+.modal-icon { font-size: 28px; margin-bottom: 12px; text-align: center; }
+.modal-title { font-size: 17px; font-weight: 700; text-align: center; margin-bottom: 6px; }
+.modal-body { font-size: 14px; color: var(--text-muted); text-align: center; line-height: 1.55; margin-bottom: 20px; }
+.modal-body strong { color: var(--text); font-weight: 600; }
+.modal-actions { display: flex; flex-direction: column; gap: 8px; }
+
+/* ─── Online Status Banner ─── */
+#offline-banner {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  z-index: 7000;
+  background: var(--red-md);
+  border-top: 1px solid var(--red);
+  color: var(--red);
+  font-size: 12px; font-weight: 600;
+  text-align: center;
+  padding: calc(8px + var(--safe-bot)) 16px 8px;
+  transform: translateY(100%);
+  transition: transform .3s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+#offline-banner.visible { transform: translateY(0); }
+
+/* ════════════════════════════════════════
+   HOME SCREEN
+════════════════════════════════════════ */
+.home-wrap {
+  max-width: 480px; margin: 0 auto;
+  padding: calc(56px + var(--safe-top)) 16px calc(44px + var(--safe-bot));
+  display: flex; flex-direction: column; gap: 12px;
+}
+
+.home-header { text-align: center; padding-bottom: 6px; }
+.app-logo {
+  width: 60px; height: 60px;
+  background: var(--accent-lo);
+  border: 1.5px solid var(--accent-md);
+  border-radius: 20px;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 14px;
+  font-size: 26px;
+  box-shadow: 0 0 0 4px var(--accent-lo);
+}
+.app-title { font-size: 22px; font-weight: 700; letter-spacing: -.03em; }
+.app-sub { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+
+/* Home Stats Row */
+.home-stats-row {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.home-stat-chip {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 11px 8px;
+  text-align: center;
+}
+.hsc-val {
+  font-size: 18px; font-weight: 700; font-family: var(--font-mono);
+  color: var(--text);
+}
+.hsc-label {
+  font-size: 10px; font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--text-dim); margin-top: 2px;
+}
+
+/* Subject + Year selectors */
+.pill-group { display: flex; gap: 8px; }
+.pill {
+  flex: 1; padding: 11px;
+  background: var(--bg-ele);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: 14px; font-weight: 600;
+  transition: all .15s;
+  text-align: center;
+}
+.pill.active {
+  background: var(--accent-lo);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.pill:active { transform: scale(.96); }
+
+.year-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; }
+.year-btn {
+  padding: 10px 4px;
+  background: var(--bg-ele);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: 13px; font-weight: 500;
+  text-align: center; transition: all .15s;
+  position: relative;
+}
+.year-btn.active { background: var(--accent-lo); border-color: var(--accent); color: var(--accent); }
+.year-btn:active { transform: scale(.94); }
+.year-btn .has-dot {
+  position: absolute; top: 4px; right: 4px;
+  width: 5px; height: 5px;
+  border-radius: 50%; background: var(--green);
+}
+
+/* Paper info card */
+.paper-info-card { padding: 14px 18px; }
+.info-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 0;
+}
+.info-row + .info-row { border-top: 1px solid var(--border-lo); }
+.info-label { font-size: 13px; color: var(--text-muted); }
+.info-val { font-size: 14px; font-weight: 600; font-family: var(--font-mono); }
+.resume-badge {
+  font-size: 11px; font-family: var(--font-body);
+  background: var(--amber-md); color: var(--amber);
+  padding: 3px 10px; border-radius: 20px; font-weight: 700;
+}
+
+/* Attempt selector */
+.attempt-row { display: flex; align-items: center; justify-content: flex-end; gap: 6px; flex-wrap: wrap; }
+.attempt-chip {
+  padding: 5px 11px;
+  background: var(--bg-ele); border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 12px; font-weight: 700; font-family: var(--font-mono);
+  color: var(--text-muted); transition: all .15s;
+}
+.attempt-chip.active { background: var(--accent-lo); border-color: var(--accent); color: var(--accent); }
+.attempt-chip.has-entry { border-color: var(--green-md); color: var(--green); }
+.attempt-chip.active.has-entry { background: var(--accent-lo); border-color: var(--accent); color: var(--accent); }
+.attempt-chip:active { transform: scale(.92); }
+
+/* Resume row */
+#info-resume-row { display: none; }
+#info-resume-row.visible { display: flex; }
+
+/* Recent attempts */
+.recent-section { display: none; }
+.recent-section.visible { display: block; }
+.recent-title {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+.recent-scroll {
+  display: flex; gap: 8px;
+  overflow-x: auto; scrollbar-width: none;
+  padding-bottom: 2px;
+}
+.recent-scroll::-webkit-scrollbar { display: none; }
+.recent-chip {
+  flex-shrink: 0;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 10px 14px;
+  display: flex; flex-direction: column; gap: 2px;
+  min-width: 84px; cursor: pointer;
+  transition: border-color .15s, transform .1s;
+}
+.recent-chip:active { transform: scale(.96); }
+.recent-chip:hover { border-color: var(--accent-hi); }
+.rc-subj { font-size: 9px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+.rc-year { font-size: 13px; font-weight: 600; }
+.rc-pct  { font-size: 12px; font-family: var(--font-mono); margin-top: 2px; }
+.rc-pct.col-ex { color: var(--green); }
+.rc-pct.col-ok { color: var(--accent); }
+.rc-pct.col-av { color: var(--amber); }
+.rc-pct.col-lo { color: var(--red); }
+
+/* ════════════════════════════════════════
+   PAPER SCREEN
+════════════════════════════════════════ */
+.paper-header {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border-lo);
+  padding: calc(10px + var(--safe-top)) 14px 8px;
+}
+.paper-top-row {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 7px; gap: 8px;
+}
+.paper-meta { display: flex; gap: 6px; align-items: center; flex: 1; min-width: 0; }
+.ph-subject {
+  font-size: 10px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase;
+  background: var(--accent-lo); color: var(--accent);
+  padding: 3px 9px; border-radius: 20px; flex-shrink: 0;
+}
+.ph-year { font-size: 12px; color: var(--text-muted); font-family: var(--font-mono); flex-shrink: 0; }
+.ph-attempt { font-size: 11px; color: var(--text-dim); font-family: var(--font-mono); }
+
+.timer-block { display: flex; align-items: center; gap: 7px; flex-shrink: 0; }
+.timer-display {
+  font-family: var(--font-mono); font-size: 19px; font-weight: 500;
+  letter-spacing: .04em; min-width: 82px; text-align: right;
+  transition: color .4s;
+}
+.timer-display.normal   { color: var(--text); }
+.timer-display.overtime { color: var(--red); animation: pulseRed 1.6s ease-in-out infinite; }
+@keyframes pulseRed { 0%,100%{opacity:1} 50%{opacity:.55} }
+
+.timer-btn {
+  width: 32px; height: 32px;
+  background: var(--bg-ele); border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted); font-size: 13px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .15s; flex-shrink: 0;
+}
+.timer-btn:active { background: var(--bg-hover); transform: scale(.9); }
+
+.paper-mode-btns { display: flex; gap: 6px; }
+.mode-btn {
+  width: 30px; height: 30px;
+  background: var(--bg-ele); border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-dim); font-size: 12px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .15s;
+}
+.mode-btn:active { background: var(--bg-hover); transform: scale(.9); }
+
+.ph-progress { display: flex; align-items: center; gap: 10px; }
+#ph-progress-text {
+  font-size: 11px; color: var(--text-muted); font-family: var(--font-mono);
+  white-space: nowrap; min-width: 40px;
+}
+.progress-bar-wrap { flex: 1; height: 3px; background: var(--border); border-radius: 4px; overflow: hidden; }
+.progress-bar-fill { height: 100%; background: var(--accent); border-radius: 4px; transition: width .4s ease; width: 0%; }
+
+/* Questions */
+.questions-scroll {
+  padding: 10px 14px calc(28px + var(--safe-bot));
+}
+.questions-list { display: flex; flex-direction: column; gap: 8px; padding-bottom: 12px; }
+
+.question-item {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  display: flex; gap: 10px; align-items: center;
+  transition: border-color .2s;
+}
+.question-item.has-answer { border-color: var(--accent-hi); }
+.question-item.focused { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-lo); }
+
+.q-num {
+  font-family: var(--font-mono); font-size: 11px; color: var(--text-dim);
+  min-width: 20px; font-weight: 500; text-align: center; flex-shrink: 0;
+}
+.q-input {
+  flex: 1; background: var(--bg-input); border: 1px solid var(--border-lo);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px; font-size: 15px; color: var(--text);
+  width: 100%;
+  transition: border-color .15s, background .15s;
+}
+.q-input::placeholder { color: var(--text-dim); }
+.q-input:focus { border-color: var(--accent); background: var(--bg-hover); }
+
+.paper-foot { padding-top: 6px; }
+
+/* Focus Mode */
+body.focus-mode .paper-meta .ph-year,
+body.focus-mode .paper-meta .ph-attempt,
+body.focus-mode .paper-mode-btns { opacity: 0; pointer-events: none; }
+
+/* Navigator FAB */
+.nav-fab {
+  position: fixed;
+  bottom: calc(22px + var(--safe-bot));
+  right: calc(16px + var(--safe-r));
+  z-index: 200;
+}
+.nav-fab-btn {
+  width: 50px; height: 50px;
+  background: var(--accent); color: #fff;
+  border-radius: 50%;
+  font-size: 11px; font-weight: 800;
+  font-family: var(--font-mono);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  box-shadow: var(--fab-shadow);
+  transition: transform .2s, box-shadow .2s;
+  line-height: 1;
+}
+.nav-fab-btn:active { transform: scale(.91); }
+.nav-fab-btn .fab-count { font-size: 10px; font-weight: 500; opacity: .8; margin-top: 1px; }
+
+/* Nav Drawer */
+.nav-overlay {
+  position: fixed; inset: 0; z-index: 299;
+  background: var(--overlay-bg);
+  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+  opacity: 0; visibility: hidden;
+  transition: opacity .22s, visibility .22s;
+}
+.nav-overlay.open { opacity: 1; visibility: visible; }
+
+.nav-drawer {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 300;
+  background: var(--bg-card);
+  border-top: 1px solid var(--border);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  padding: 0 16px calc(var(--safe-bot) + 8px);
+  max-height: 78vh;
+  transform: translateY(100%);
+  transition: transform .3s cubic-bezier(.4,0,.2,1);
+  overflow: hidden; display: flex; flex-direction: column;
+}
+.nav-drawer.open { transform: translateY(0); }
+.nav-drawer-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 0 10px;
+  border-bottom: 1px solid var(--border-lo);
+  flex-shrink: 0;
+}
+.nav-drawer-title { font-size: 15px; font-weight: 700; }
+.nav-header-right { display: flex; align-items: center; gap: 8px; }
+
+/* Quick jump */
+.quick-jump-wrap { display: flex; gap: 6px; }
+.quick-jump-input {
+  width: 60px; padding: 5px 8px;
+  background: var(--bg-ele); border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 13px; font-family: var(--font-mono); color: var(--text);
+  text-align: center;
+}
+.quick-jump-btn {
+  padding: 5px 10px;
+  background: var(--accent-lo); border: 1px solid var(--accent-md);
+  border-radius: var(--radius-sm);
+  font-size: 12px; font-weight: 600; color: var(--accent);
+  transition: all .15s;
+}
+.quick-jump-btn:active { background: var(--accent-md); }
+
+.nav-close {
+  width: 28px; height: 28px;
+  background: var(--bg-ele); border: 1px solid var(--border);
+  border-radius: 50%;
+  color: var(--text-muted); font-size: 13px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .15s;
+}
+.nav-close:active { background: var(--bg-hover); }
+
+.nav-grid-wrap { overflow-y: auto; flex: 1; padding: 10px 0; }
+.nav-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 5px;
+}
+.nav-cell {
+  aspect-ratio: 1;
+  background: var(--bg-ele); border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 11px; font-weight: 600; font-family: var(--font-mono);
+  color: var(--text-dim);
+  display: flex; align-items: center; justify-content: center;
+  transition: all .15s;
+  cursor: pointer;
+}
+.nav-cell.answered { background: var(--accent-lo); border-color: var(--accent-hi); color: var(--accent); }
+.nav-cell.current { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-lo); }
+.nav-cell:active { transform: scale(.9); }
+
+.nav-legend {
+  display: flex; gap: 12px;
+  padding: 8px 0 4px;
+  border-top: 1px solid var(--border-lo);
+  font-size: 11px; color: var(--text-dim);
+  flex-shrink: 0;
+}
+.leg {
+  width: 10px; height: 10px; border-radius: 3px; display: inline-block;
+  vertical-align: middle; margin-right: 4px;
+}
+.leg.answered { background: var(--accent-lo); border: 1px solid var(--accent-hi); }
+.leg.unanswered { background: var(--bg-ele); border: 1px solid var(--border); }
+
+/* ════════════════════════════════════════
+   MARKING SCREEN
+════════════════════════════════════════ */
+.marking-header {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border-lo);
+  padding: calc(14px + var(--safe-top)) 16px 12px;
+}
+.marking-title-row {
+  display: flex; align-items: baseline; gap: 10px; margin-bottom: 10px;
+}
+.marking-title { font-size: 17px; font-weight: 700; }
+.marking-meta-sub { font-size: 12px; color: var(--text-muted); font-family: var(--font-mono); }
+.marking-instruction {
+  display: flex; gap: 12px; flex-wrap: wrap;
+}
+.inst-item {
+  font-size: 11px; color: var(--text-muted);
+  display: flex; align-items: center; gap: 5px;
+}
+.dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+.dot.green { background: var(--green); }
+.dot.red   { background: var(--red); }
+.dot.neutral { background: var(--border-hi); }
+
+.marking-summary-bar {
+  display: grid; grid-template-columns: 1fr 1fr 1fr 1fr;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border-lo);
+  gap: 2px;
+  background: var(--bg-card);
+  border-bottom: 2px solid var(--border-lo);
+}
+.ms-item {
+  text-align: center; padding: 6px 4px;
+}
+.ms-item + .ms-item { border-left: 1px solid var(--border-lo); }
+.ms-num {
+  display: block; font-size: 20px; font-weight: 700; font-family: var(--font-mono);
+}
+.ms-item.correct .ms-num   { color: var(--green); }
+.ms-item.incorrect .ms-num { color: var(--red); }
+.ms-item.unmarked .ms-num  { color: var(--text-dim); }
+.ms-pct-num { display: block; font-size: 20px; font-weight: 700; font-family: var(--font-mono); color: var(--accent); }
+.ms-lbl, .ms-pct-lbl {
+  font-size: 10px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--text-dim); margin-top: 2px; display: block;
+}
+
+.marking-list {
+  padding: 8px 14px calc(24px + var(--safe-bot));
+  display: flex; flex-direction: column; gap: 5px;
+}
+
+.mark-item {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+.mark-item:active { background: var(--bg-ele); }
+.mark-item.state-correct   { background: var(--green-lo); border-color: var(--green-md); }
+.mark-item.state-incorrect { background: var(--red-lo);   border-color: var(--red-md); }
+
+.mark-num {
+  font-family: var(--font-mono); font-size: 11px; color: var(--text-dim);
+  min-width: 22px; font-weight: 500; text-align: right; flex-shrink: 0;
+}
+.mark-answer {
+  flex: 1; font-size: 14px; color: var(--text-dim);
+  font-family: var(--font-mono);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.mark-answer.has-text { color: var(--text); }
+.mark-status {
+  font-size: 16px; flex-shrink: 0; min-width: 20px; text-align: center;
+}
+.state-correct .mark-status   { color: var(--green); }
+.state-incorrect .mark-status { color: var(--red); }
+
+.marking-foot {
+  position: sticky; bottom: 0;
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid var(--border-lo);
+  padding: 12px 16px calc(var(--safe-bot) + 8px);
+}
+
+/* ════════════════════════════════════════
+   RESULTS SCREEN
+════════════════════════════════════════ */
+.results-wrap {
+  max-width: 480px; margin: 0 auto;
+  padding: calc(52px + var(--safe-top)) 16px calc(44px + var(--safe-bot));
+  display: flex; flex-direction: column; gap: 16px;
+}
+.results-header {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+}
+
+/* Score ring */
+.score-ring-wrap {
+  position: relative; width: 150px; height: 150px;
+  margin: 10px auto;
+}
+.score-ring { width: 100%; height: 100%; transform: rotate(-90deg); }
+.ring-track { fill: none; stroke: var(--border); stroke-width: 8; }
+.ring-fill {
+  fill: none; stroke: var(--accent); stroke-width: 8;
+  stroke-linecap: round;
+  stroke-dasharray: 314; stroke-dashoffset: 314;
+  transition: stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1), stroke .4s;
+}
+.score-ring-text {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+}
+.score-pct { font-size: 30px; font-weight: 700; font-family: var(--font-mono); }
+.score-frac { font-size: 13px; color: var(--text-muted); font-family: var(--font-mono); margin-top: 2px; }
+
+.perf-label {
+  text-align: center;
+  font-size: 13px; font-weight: 700;
+  letter-spacing: .06em; text-transform: uppercase;
+  padding: 4px 14px; border-radius: 20px; display: inline-block; margin: 0 auto;
+}
+.perf-excellent { background: var(--green-lo); color: var(--green); }
+.perf-strong    { background: var(--accent-lo); color: var(--accent); }
+.perf-average   { background: var(--amber-lo); color: var(--amber); }
+.perf-needs-impr { background: var(--red-lo); color: var(--red); }
+
+.results-stats { padding: 14px 18px; }
+.stat-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 0;
+}
+.stat-row + .stat-row { border-top: 1px solid var(--border-lo); }
+.stat-label { font-size: 13px; color: var(--text-muted); }
+.stat-val { font-size: 14px; font-weight: 600; font-family: var(--font-mono); }
+.stat-val.green { color: var(--green); }
+.stat-val.red   { color: var(--red); }
+.stat-val.muted { color: var(--text-muted); }
+
+.results-actions { display: flex; flex-direction: column; gap: 8px; }
+
+/* ════════════════════════════════════════
+   HISTORY SCREEN
+════════════════════════════════════════ */
+.history-header {
+  display: flex; align-items: center; gap: 12px;
+  padding: calc(14px + var(--safe-top)) 16px 12px;
+  border-bottom: 1px solid var(--border-lo);
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  position: sticky; top: 0; z-index: 100;
+}
+.back-btn {
+  width: 36px; height: 36px;
+  background: var(--bg-ele); border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted); font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .15s; flex-shrink: 0;
+}
+.back-btn:active { background: var(--bg-hover); }
+.history-title { font-size: 17px; font-weight: 700; flex: 1; }
+
+.history-tabs {
+  display: flex; gap: 0;
+  border-bottom: 1px solid var(--border-lo);
+  background: var(--bg-card);
+  overflow-x: auto; scrollbar-width: none;
+  padding: 0 12px;
+}
+.history-tabs::-webkit-scrollbar { display: none; }
+.h-tab {
+  padding: 11px 14px;
+  font-size: 13px; font-weight: 600;
+  color: var(--text-dim);
+  border-bottom: 2px solid transparent;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.h-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+.history-stats-bar {
+  display: flex; gap: 6px; overflow-x: auto;
+  scrollbar-width: none; padding: 12px 14px;
+  border-bottom: 1px solid var(--border-lo);
+}
+.history-stats-bar::-webkit-scrollbar { display: none; }
+.hist-stat-chip {
+  flex-shrink: 0; background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 8px 12px;
+  display: flex; flex-direction: column; align-items: center; gap: 1px;
+  min-width: 64px;
+}
+.hs-label { font-size: 9px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--text-dim); }
+.hs-val { font-size: 15px; font-weight: 700; font-family: var(--font-mono); }
+
+.history-list {
+  padding: 8px 14px calc(40px + var(--safe-bot));
+  display: flex; flex-direction: column; gap: 6px;
+}
+.hist-item {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  display: flex; align-items: center; gap: 12px;
+  cursor: pointer; transition: border-color .15s;
+}
+.hist-item:active { background: var(--bg-ele); }
+.hist-item.expanded { border-color: var(--accent-hi); border-radius: var(--radius) var(--radius) 0 0; margin-bottom: 0; }
+.hist-item-left { flex: 1; min-width: 0; }
+.hist-subject-badge {
+  font-size: 9px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
+  background: var(--accent-lo); color: var(--accent);
+  padding: 2px 7px; border-radius: 20px; display: inline-block;
+  margin-bottom: 4px;
+}
+.hist-year { font-size: 14px; font-weight: 600; }
+.hist-sub  { font-size: 11px; color: var(--text-muted); font-family: var(--font-mono); margin-top: 2px; }
+.hist-date { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+.hist-item-right { text-align: right; flex-shrink: 0; }
+.hist-score { font-size: 14px; font-weight: 700; font-family: var(--font-mono); }
+.hist-pct { font-size: 13px; font-family: var(--font-mono); margin-top: 2px; }
+.hist-pct.col-ex { color: var(--green); }
+.hist-pct.col-ok { color: var(--accent); }
+.hist-pct.col-av { color: var(--amber); }
+.hist-pct.col-lo { color: var(--red); }
+
+.hist-item-actions {
+  display: none; flex-wrap: wrap; gap: 6px;
+  padding: 10px 14px 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--accent-hi);
+  border-top: none;
+  border-radius: 0 0 var(--radius) var(--radius);
+  margin-top: -1px;
+}
+.hist-item.expanded + .hist-item-actions { display: flex; }
+.hist-action-btn {
+  padding: 7px 14px; border-radius: var(--radius-sm);
+  font-size: 12px; font-weight: 600;
+  background: var(--bg-ele); border: 1px solid var(--border);
+  color: var(--text-muted); transition: all .15s;
+}
+.hist-action-btn:active { background: var(--bg-hover); color: var(--text); }
+.hist-action-btn.danger { color: var(--red); border-color: var(--red-md); background: var(--red-lo); }
+.hist-action-btn.reopen { color: var(--accent); border-color: var(--accent-md); background: var(--accent-lo); }
+
+.history-empty { padding: 60px 20px; text-align: center; color: var(--text-muted); font-size: 14px; }
+.empty-icon { font-size: 32px; margin-bottom: 12px; }
+.empty-sub { color: var(--text-dim); font-size: 13px; margin-top: 6px; }
+
+/* ════════════════════════════════════════
+   ANALYTICS TAB
+════════════════════════════════════════ */
+.analytics-body {
+  max-width: 480px; margin: 0 auto;
+  padding: 14px 14px calc(44px + var(--safe-bot));
+  display: flex; flex-direction: column; gap: 12px;
+}
+.analytics-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); overflow: hidden;
+}
+.analytics-card-header {
+  padding: 13px 16px 10px;
+  border-bottom: 1px solid var(--border-lo);
+  display: flex; align-items: baseline; gap: 8px;
+}
+.analytics-card-title  { font-size: 13px; font-weight: 700; color: var(--text); flex: 1; }
+.analytics-card-sub    { font-size: 11px; color: var(--text-dim); }
+
+/* Overview trend boxes */
+.trend-grid {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  gap: 1px; background: var(--border-lo);
+}
+.trend-box { background: var(--bg-card); padding: 14px 8px; text-align: center; }
+.trend-val { font-size: 20px; font-weight: 700; font-family: var(--font-mono); color: var(--text); }
+.trend-val.up   { color: var(--green); }
+.trend-val.down { color: var(--red); }
+.trend-label { font-size: 10px; text-transform: uppercase; letter-spacing: .08em; color: var(--text-dim); margin-top: 3px; }
+
+/* Subject compare */
+.subj-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 14px 16px; }
+.subj-box { background: var(--bg-ele); border-radius: var(--radius); padding: 14px; text-align: center; }
+.subj-box-label { font-size: 10px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; }
+.subj-box-avg   { font-size: 24px; font-weight: 700; font-family: var(--font-mono); }
+.subj-box-count { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+
+/* Chart area */
+.chart-area { padding: 14px 10px 10px; overflow-x: auto; }
+.chart-svg { width: 100%; min-width: 280px; overflow: visible; }
+.chart-bar { transition: opacity .15s; cursor: pointer; }
+.chart-bar:hover { opacity: .75; }
+.chart-label { font-family: var(--font-mono); font-size: 9px; fill: var(--text-dim); }
+.chart-val   { font-family: var(--font-mono); font-size: 10px; fill: var(--text-muted); }
+.chart-gridline { stroke: var(--border-lo); stroke-width: 1; }
+
+/* Insights */
+.insights-list { padding: 10px 14px 14px; display: flex; flex-direction: column; gap: 7px; }
+.insight-item {
+  display: flex; gap: 10px; align-items: flex-start;
+  background: var(--bg-ele); border-radius: var(--radius-sm);
+  padding: 10px 12px;
+}
+.insight-icon { font-size: 16px; flex-shrink: 0; padding-top: 1px; }
+.insight-text { font-size: 13px; color: var(--text-muted); line-height: 1.55; }
+.insight-text strong { color: var(--text); font-weight: 600; }
+
+/* Attempt comparison table */
+.comp-table { padding: 8px 14px 14px; }
+.comp-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 7px 0; border-bottom: 1px solid var(--border-lo);
+}
+.comp-row:last-child { border-bottom: none; }
+.comp-label { font-size: 12px; font-family: var(--font-mono); color: var(--text-muted); min-width: 70px; }
+.comp-bar-wrap { flex: 1; height: 5px; background: var(--border); border-radius: 4px; overflow: hidden; }
+.comp-bar-fill { height: 100%; border-radius: 4px; transition: width .6s ease; }
+.comp-pct { font-size: 12px; font-family: var(--font-mono); font-weight: 600; min-width: 36px; text-align: right; }
+
+/* ════════════════════════════════════════
+   Scrollbar
+════════════════════════════════════════ */
+::-webkit-scrollbar { width: 3px; height: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+</style>
 </head>
 <body>
 
-  <!-- ═══════════════════════════════ HOME SCREEN ═══════════════════════════════ -->
-  <div id="screen-home" class="screen active">
-    <div class="home-wrap">
-      <div class="home-header">
-        <div class="app-logo">
-          <span class="logo-icon">⚖</span>
-        </div>
-        <h1 class="app-title">SLLC Entrance</h1>
-        <p class="app-sub">Past Paper Practice</p>
-      </div>
+<!-- ── Sync indicator (top-center) ── -->
+<div id="sync-indicator">
+  <span class="sync-dot"></span>
+  <span id="sync-text">Saved</span>
+</div>
 
-      <div class="card selector-card">
-        <label class="field-label">Subject</label>
-        <div class="pill-group" id="subject-pills">
-          <button class="pill active" data-value="IQ">IQ</button>
-          <button class="pill" data-value="GK">GK</button>
-        </div>
+<!-- ── Theme toggle ── -->
+<button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">☀</button>
 
-        <label class="field-label mt">Year</label>
-        <div class="year-grid" id="year-grid"></div>
-      </div>
+<!-- ── Offline banner ── -->
+<div id="offline-banner">⚡ Offline — answers saved locally, will sync when reconnected</div>
 
-      <div class="card paper-info-card" id="paper-info">
-        <div class="info-row">
-          <span class="info-label">Questions</span>
-          <span class="info-val" id="info-questions">—</span>
-        </div>
-        <div class="info-row">
-          <span class="info-label">Duration</span>
-          <span class="info-val" id="info-duration">—</span>
-        </div>
-        <div class="info-row" id="info-resume-row" style="display:none">
-          <span class="info-label">Session</span>
-          <span class="info-val resume-badge">Resume available</span>
-        </div>
-      </div>
-
-      <button class="btn-primary" id="btn-start">▶ Start Paper</button>
-      <button class="btn-ghost" id="btn-history">History</button>
-    </div>
+<!-- ══════════════════════════════════
+     MODAL OVERLAY (shared)
+══════════════════════════════════ -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-sheet" id="modal-sheet">
+    <div class="modal-icon" id="modal-icon"></div>
+    <div class="modal-title" id="modal-title"></div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-actions" id="modal-actions"></div>
   </div>
+</div>
 
-  <!-- ═══════════════════════════════ PAPER SCREEN ═══════════════════════════════ -->
-  <div id="screen-paper" class="screen">
+<!-- ══════════════════════════════════
+     HOME SCREEN
+══════════════════════════════════ -->
+<div id="screen-home" class="screen active">
+  <div class="home-wrap">
 
-    <!-- Sticky header -->
-    <div class="paper-header" id="paper-header">
+    <div class="home-header">
+      <div class="app-logo">⚖</div>
+      <h1 class="app-title">SLLC Entrance</h1>
+      <p class="app-sub">Past Paper Practice</p>
+    </div>
+
+    <!-- Overall stats strip -->
+    <div class="home-stats-row" id="home-stats-row" style="display:none">
+      <div class="home-stat-chip">
+        <div class="hsc-val" id="hs-papers">0</div>
+        <div class="hsc-label">Papers</div>
+      </div>
+      <div class="home-stat-chip">
+        <div class="hsc-val" id="hs-avg">—</div>
+        <div class="hsc-label">Avg Score</div>
+      </div>
+      <div class="home-stat-chip">
+        <div class="hsc-val" id="hs-best">—</div>
+        <div class="hsc-label">Best</div>
+      </div>
+    </div>
+
+    <!-- Subject + Year selector -->
+    <div class="card" style="padding:16px 18px;display:flex;flex-direction:column;gap:0">
+      <label class="field-label">Subject</label>
+      <div class="pill-group" id="subject-pills">
+        <button class="pill active" data-value="IQ">IQ</button>
+        <button class="pill" data-value="GK">GK</button>
+      </div>
+      <label class="field-label mt">Year</label>
+      <div class="year-grid" id="year-grid"></div>
+    </div>
+
+    <!-- Paper info card -->
+    <div class="card paper-info-card">
+      <div class="info-row">
+        <span class="info-label">Questions</span>
+        <span class="info-val" id="info-questions">—</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Duration</span>
+        <span class="info-val" id="info-duration">—</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Attempt</span>
+        <div class="attempt-row" id="attempt-btns"></div>
+      </div>
+      <div class="info-row" id="info-resume-row">
+        <span class="info-label">Session found</span>
+        <span class="resume-badge">Resume</span>
+      </div>
+    </div>
+
+    <button class="btn-primary" id="btn-start">▶ Start Paper</button>
+    <button class="btn-ghost" id="btn-history">History &amp; Analytics</button>
+
+    <!-- Recent attempts strip -->
+    <div class="recent-section" id="recent-section">
+      <div class="recent-title">Recent Attempts</div>
+      <div class="recent-scroll" id="recent-scroll"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     PAPER SCREEN
+══════════════════════════════════ -->
+<div id="screen-paper" class="screen">
+  <div class="paper-header">
+    <div class="paper-top-row">
       <div class="paper-meta">
         <span id="ph-subject" class="ph-subject"></span>
         <span id="ph-year" class="ph-year"></span>
+        <span id="ph-attempt" class="ph-attempt"></span>
       </div>
-      <div class="timer-block" id="timer-block">
-        <span id="timer-display" class="timer-normal">00:00:00</span>
-        <button class="timer-btn" id="btn-pause-resume" title="Pause/Resume">⏸</button>
-      </div>
-      <div class="ph-progress">
-        <span id="ph-progress-text">0 / 0</span>
-        <div class="progress-bar-wrap">
-          <div class="progress-bar-fill" id="progress-bar-fill"></div>
+      <div class="timer-block">
+        <div class="paper-mode-btns">
+          <button class="mode-btn" id="btn-focus" title="Focus mode">◉</button>
+          <button class="mode-btn" id="btn-fullscreen" title="Fullscreen">⛶</button>
         </div>
+        <span id="timer-display" class="timer-display normal">00:00:00</span>
+        <button class="timer-btn" id="btn-pause-resume" title="Pause / Resume">⏸</button>
       </div>
     </div>
-
-    <!-- Question list -->
-    <div class="questions-scroll" id="questions-scroll">
-      <div class="questions-list" id="questions-list"></div>
-      <div class="paper-foot">
-        <button class="btn-primary btn-complete" id="btn-complete">Complete Paper</button>
+    <div class="ph-progress">
+      <span id="ph-progress-text">0 / 0</span>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="progress-bar-fill"></div>
       </div>
     </div>
+  </div>
 
-    <!-- Floating navigator -->
-    <div class="nav-fab" id="nav-fab">
-      <button class="nav-fab-btn" id="nav-fab-toggle" title="Question Navigator">#</button>
+  <div class="questions-scroll">
+    <div class="questions-list" id="questions-list"></div>
+    <div class="paper-foot">
+      <button class="btn-ghost" id="btn-complete" style="font-weight:600;">Complete Paper</button>
     </div>
-    <div class="nav-drawer" id="nav-drawer">
-      <div class="nav-drawer-header">
-        <span class="nav-drawer-title">Questions</span>
+  </div>
+
+  <!-- Navigator FAB -->
+  <div class="nav-fab">
+    <button class="nav-fab-btn" id="nav-fab-toggle">
+      <span>#</span>
+      <span class="fab-count" id="fab-count"></span>
+    </button>
+  </div>
+
+  <!-- Nav Drawer -->
+  <div class="nav-overlay" id="nav-overlay"></div>
+  <div class="nav-drawer" id="nav-drawer">
+    <div class="nav-drawer-header">
+      <span class="nav-drawer-title">Jump to Question</span>
+      <div class="nav-header-right">
+        <div class="quick-jump-wrap">
+          <input type="number" class="quick-jump-input" id="quick-jump-input" placeholder="No." min="1" />
+          <button class="quick-jump-btn" id="quick-jump-btn">Go</button>
+        </div>
         <button class="nav-close" id="nav-close">✕</button>
       </div>
+    </div>
+    <div class="nav-grid-wrap">
       <div class="nav-grid" id="nav-grid"></div>
-      <div class="nav-legend">
-        <span class="leg answered"></span> Answered
-        <span class="leg unanswered"></span> Unanswered
-      </div>
     </div>
-    <div class="nav-overlay" id="nav-overlay"></div>
+    <div class="nav-legend">
+      <span><span class="leg answered"></span>Answered</span>
+      <span><span class="leg unanswered"></span>Unanswered</span>
+    </div>
   </div>
+</div>
 
-  <!-- ═══════════════════════════════ MARKING SCREEN ═══════════════════════════════ -->
-  <div id="screen-marking" class="screen">
-    <div class="marking-header">
-      <div class="marking-title-row">
-        <h2 class="marking-title">Self-Marking</h2>
-        <div class="marking-meta-sub" id="marking-meta"></div>
-      </div>
-      <div class="marking-instruction">
-        <span class="inst-item"><span class="dot green"></span>Single tap = Correct</span>
-        <span class="inst-item"><span class="dot red"></span>Double tap = Incorrect</span>
-        <span class="inst-item"><span class="dot neutral"></span>Triple tap = Reset</span>
-      </div>
+<!-- ══════════════════════════════════
+     MARKING SCREEN
+══════════════════════════════════ -->
+<div id="screen-marking" class="screen">
+  <div class="marking-header">
+    <div class="marking-title-row">
+      <h2 class="marking-title">Self-Marking</h2>
+      <div class="marking-meta-sub" id="marking-meta"></div>
     </div>
-
-    <div class="marking-summary-bar" id="marking-summary-bar">
-      <div class="ms-item correct"><span class="ms-num" id="ms-correct">0</span><span class="ms-lbl">Correct</span></div>
-      <div class="ms-item incorrect"><span class="ms-num" id="ms-incorrect">0</span><span class="ms-lbl">Incorrect</span></div>
-      <div class="ms-item unmarked"><span class="ms-num" id="ms-unmarked">0</span><span class="ms-lbl">Unmarked</span></div>
-    </div>
-
-    <div class="marking-list" id="marking-list"></div>
-
-    <div class="marking-foot">
-      <button class="btn-primary" id="btn-marking-done">✅ Marking Completed</button>
+    <div class="marking-instruction">
+      <span class="inst-item"><span class="dot green"></span>1× = Correct</span>
+      <span class="inst-item"><span class="dot red"></span>2× = Incorrect</span>
+      <span class="inst-item"><span class="dot neutral"></span>3× = Reset</span>
     </div>
   </div>
 
-  <!-- ═══════════════════════════════ RESULTS SCREEN ═══════════════════════════════ -->
-  <div id="screen-results" class="screen">
-    <div class="results-wrap">
-      <div class="results-header">
-        <span class="results-subject" id="res-subject"></span>
-        <span class="results-year" id="res-year"></span>
-      </div>
+  <div class="marking-summary-bar">
+    <div class="ms-item correct">
+      <span class="ms-num" id="ms-correct">0</span>
+      <span class="ms-lbl">Correct</span>
+    </div>
+    <div class="ms-item incorrect">
+      <span class="ms-num" id="ms-incorrect">0</span>
+      <span class="ms-lbl">Wrong</span>
+    </div>
+    <div class="ms-item unmarked">
+      <span class="ms-num" id="ms-unmarked">0</span>
+      <span class="ms-lbl">Unmarked</span>
+    </div>
+    <div class="ms-item" style="text-align:center;padding:6px 4px;">
+      <span class="ms-pct-num" id="ms-pct">—</span>
+      <span class="ms-pct-lbl">Score</span>
+    </div>
+  </div>
 
+  <div class="marking-list" id="marking-list"></div>
+
+  <div class="marking-foot">
+    <button class="btn-primary" id="btn-marking-done">✅ Save Results</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     RESULTS SCREEN
+══════════════════════════════════ -->
+<div id="screen-results" class="screen">
+  <div class="results-wrap">
+    <div class="results-header">
+      <span class="badge badge-accent" id="res-subject"></span>
+      <span style="font-size:14px;color:var(--text-muted);font-family:var(--font-mono)" id="res-year"></span>
+      <span style="font-size:12px;color:var(--text-dim);font-family:var(--font-mono)" id="res-attempt-label"></span>
+    </div>
+
+    <div style="text-align:center">
       <div class="score-ring-wrap">
         <svg class="score-ring" viewBox="0 0 120 120">
           <circle class="ring-track" cx="60" cy="60" r="50"/>
@@ -146,62 +1221,1436 @@
           <span class="score-frac" id="res-frac">0/0</span>
         </div>
       </div>
-
       <div class="perf-label" id="res-perf-label"></div>
+    </div>
 
-      <div class="card results-stats">
-        <div class="stat-row">
-          <span class="stat-label">Correct</span>
-          <span class="stat-val green" id="res-correct"></span>
-        </div>
-        <div class="stat-row">
-          <span class="stat-label">Incorrect</span>
-          <span class="stat-val red" id="res-incorrect"></span>
-        </div>
-        <div class="stat-row">
-          <span class="stat-label">Unmarked</span>
-          <span class="stat-val muted" id="res-unmarked"></span>
-        </div>
-        <div class="divider"></div>
-        <div class="stat-row">
-          <span class="stat-label">Time taken</span>
-          <span class="stat-val" id="res-time"></span>
-        </div>
-        <div class="stat-row" id="res-overtime-row" style="display:none">
-          <span class="stat-label">Overtime</span>
-          <span class="stat-val red" id="res-overtime"></span>
-        </div>
-        <div class="stat-row">
-          <span class="stat-label">Date</span>
-          <span class="stat-val muted" id="res-date"></span>
-        </div>
+    <div class="card results-stats">
+      <div class="stat-row"><span class="stat-label">Correct</span><span class="stat-val green" id="res-correct"></span></div>
+      <div class="stat-row"><span class="stat-label">Incorrect</span><span class="stat-val red" id="res-incorrect"></span></div>
+      <div class="stat-row"><span class="stat-label">Unmarked</span><span class="stat-val muted" id="res-unmarked"></span></div>
+      <div class="divider"></div>
+      <div class="stat-row"><span class="stat-label">Time taken</span><span class="stat-val" id="res-time"></span></div>
+      <div class="stat-row" id="res-overtime-row" style="display:none">
+        <span class="stat-label">Overtime</span><span class="stat-val red" id="res-overtime"></span>
       </div>
+      <div class="stat-row"><span class="stat-label">Attempt</span><span class="stat-val muted" id="res-attempt"></span></div>
+      <div class="stat-row"><span class="stat-label">Date</span><span class="stat-val muted" id="res-date"></span></div>
+    </div>
 
-      <button class="btn-primary" id="btn-res-home">Back to Home</button>
+    <div class="results-actions">
+      <button class="btn-primary" id="btn-res-home">← Back to Home</button>
+      <button class="btn-ghost" id="btn-res-history">View All History</button>
     </div>
   </div>
+</div>
 
-  <!-- ═══════════════════════════════ HISTORY SCREEN ═══════════════════════════════ -->
-  <div id="screen-history" class="screen">
-    <div class="history-header">
-      <button class="back-btn" id="btn-history-back">←</button>
-      <h2 class="history-title">Attempt History</h2>
-    </div>
-
-    <div class="history-stats-bar" id="history-stats-bar"></div>
-
-    <div class="history-list" id="history-list"></div>
-    <div class="history-empty" id="history-empty" style="display:none">
-      <p>No attempts yet.</p>
-      <p class="muted-text">Complete a paper to see your history.</p>
-    </div>
+<!-- ══════════════════════════════════
+     HISTORY SCREEN
+══════════════════════════════════ -->
+<div id="screen-history" class="screen">
+  <div class="history-header">
+    <button class="back-btn" id="btn-history-back">←</button>
+    <h2 class="history-title">History</h2>
   </div>
+  <div class="history-tabs" id="history-tabs">
+    <button class="h-tab active" data-tab="all">All</button>
+    <button class="h-tab" data-tab="IQ">IQ</button>
+    <button class="h-tab" data-tab="GK">GK</button>
+    <button class="h-tab" data-tab="analytics">Analytics</button>
+  </div>
+  <div id="history-tab-content"></div>
+</div>
 
-  <!-- ═══════════════════════════════ THEME TOGGLE ═══════════════════════════════ -->
-  <button class="theme-toggle" id="theme-toggle" title="Toggle light/dark mode" aria-label="Toggle theme">
-    <span id="theme-icon">☀</span>
-  </button>
+<!-- ══════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════ -->
+<script>
+'use strict';
 
-  <script src="script.js"></script>
+/* ════════════════════════════════════════════════════════
+   ① FIREBASE CONFIG
+   ▶ Replace with your Firebase project credentials
+   ▶ App works fully offline with localStorage if left empty
+════════════════════════════════════════════════════════ */
+
+const firebaseConfig = {
+  apiKey: "AIzaSyApJnudSUCgqAsILnUm4J52FsjPBpvAqac",
+  authDomain: "past-paper-5bb3b.firebaseapp.com",
+  databaseURL: "https://past-paper-5bb3b-default-rtdb.firebaseio.com",
+  projectId: "past-paper-5bb3b",
+  storageBucket: "past-paper-5bb3b.appspot.com",
+  messagingSenderId: "546779034997",
+  appId: "1:546779034997:web:c79dd59be4748dd6b38f3c"
+};
+// Firestore path helpers — structure: randinu/law-practice/{subcollection}
+let db = null;
+
+function dbPath() {
+  return db ? db.collection('randinu').doc('law-practice') : null;
+}
+
+/* ════════════════════════════════════════════════════════
+   ② CONSTANTS & PAPER CONFIG
+════════════════════════════════════════════════════════ */
+const SUBJECTS = ['IQ', 'GK'];
+const YEARS    = [2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024];
+
+/**
+ * getPaperConfig — returns question count + allowed seconds per year.
+ *
+ * ⚠️ CORRECTED per user: ONLY 2022 was the 60-question, 1h 30m paper.
+ *    All other years (2014–2021, 2023–2024) are 50 questions, 1 hour.
+ */
+function getPaperConfig(year) {
+  if (year === 2022) return { questions: 60, seconds: 5400 }; // 60q · 1h 30m
+  return              { questions: 50, seconds: 3600 };       // 50q · 1h (all others)
+}
+
+const LS = {
+  SESSION:  'sllc_session_v3',
+  HISTORY:  'sllc_history_v3',
+  THEME:    'sllc_theme',
+};
+
+/* ════════════════════════════════════════════════════════
+   ③ STATE
+════════════════════════════════════════════════════════ */
+let state = {
+  subject:       'IQ',
+  year:          2024,
+  attempt:       1,
+  answers:       [],
+  marks:         [],
+  started:       false,
+  paused:        false,
+  startTime:     null,
+  pausedAt:      null,
+  totalPausedMs: 0,
+  _elapsedAtComplete: 0,
+  _editingEntry:      null, // when re-marking existing entry
+  _focusMode:         false,
+};
+
+let timerInterval   = null;
+let lsSaveDebounce  = null;
+let fbSaveDebounce  = null;
+let isOnline        = navigator.onLine;
+let currentNavCell  = -1;
+
+/* ════════════════════════════════════════════════════════
+   ④ FIREBASE INIT
+════════════════════════════════════════════════════════ */
+function initFirebase() {
+  try {
+    if (!FIREBASE_CONFIG.apiKey || FIREBASE_CONFIG.apiKey === 'YOUR_API_KEY') {
+      console.info('[SLLC] Firebase not configured — running localStorage-only mode.');
+      return;
+    }
+    firebase.initializeApp(FIREBASE_CONFIG);
+    db = firebase.firestore();
+    db.enablePersistence({ synchronizeTabs: true })
+      .catch(e => console.warn('[SLLC] Persistence unavailable:', e.code));
+    console.info('[SLLC] Firebase ready ✓');
+  } catch(e) {
+    console.warn('[SLLC] Firebase init failed:', e);
+    db = null;
+  }
+}
+
+/* ════════════════════════════════════════════════════════
+   ⑤ ONLINE/OFFLINE DETECTION
+════════════════════════════════════════════════════════ */
+window.addEventListener('online',  () => { isOnline = true;  updateOfflineBanner(); });
+window.addEventListener('offline', () => { isOnline = false; updateOfflineBanner(); });
+
+function updateOfflineBanner() {
+  document.getElementById('offline-banner').classList.toggle('visible', !isOnline);
+}
+
+/* ════════════════════════════════════════════════════════
+   ⑥ SYNC / SAVE INDICATOR
+════════════════════════════════════════════════════════ */
+let syncHideTimer = null;
+
+function showSync(type) {
+  const el   = document.getElementById('sync-indicator');
+  const text = document.getElementById('sync-text');
+  clearTimeout(syncHideTimer);
+  el.className = 'show ' + type;
+  const labels = {
+    saving: '● Saving…', saved: '✓ Saved locally',
+    synced: '☁ Synced', offline: '⚡ Offline — saved locally',
+    failed: '✗ Cloud sync failed'
+  };
+  text.textContent = labels[type] || type;
+  if (type !== 'saving') {
+    syncHideTimer = setTimeout(() => { el.className = ''; }, 2400);
+  }
+}
+
+/* ════════════════════════════════════════════════════════
+   ⑦ MODAL SYSTEM
+════════════════════════════════════════════════════════ */
+function showModal({ icon='', title='', body='', actions=[] }) {
+  document.getElementById('modal-icon').textContent     = icon;
+  document.getElementById('modal-title').textContent    = title;
+  document.getElementById('modal-body').innerHTML       = body;
+  const actionsEl = document.getElementById('modal-actions');
+  actionsEl.innerHTML = '';
+  actions.forEach(({ label, style, onClick }) => {
+    const btn = document.createElement('button');
+    btn.className = style === 'primary' ? 'btn-primary'
+                  : style === 'danger'  ? 'btn-danger'
+                  : 'btn-ghost';
+    btn.textContent = label;
+    btn.addEventListener('click', () => { closeModal(); onClick(); });
+    actionsEl.appendChild(btn);
+  });
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+}
+
+document.getElementById('modal-overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('modal-overlay')) closeModal();
+});
+
+/* ════════════════════════════════════════════════════════
+   ⑧ SCREEN ROUTER
+════════════════════════════════════════════════════════ */
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+/* ════════════════════════════════════════════════════════
+   ⑨ UTILITIES
+════════════════════════════════════════════════════════ */
+function formatMs(ms) {
+  const s   = Math.floor(Math.abs(ms) / 1000);
+  const h   = Math.floor(s / 3600);
+  const m   = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  const p   = n => String(n).padStart(2, '0');
+  return `${p(h)}:${p(m)}:${p(sec)}`;
+}
+
+function pctClass(pct) {
+  return pct >= 90 ? 'col-ex' : pct >= 75 ? 'col-ok' : pct >= 60 ? 'col-av' : 'col-lo';
+}
+
+function elapsedMs() {
+  if (!state.startTime) return 0;
+  const now = state.paused ? (state.pausedAt || Date.now()) : Date.now();
+  return (now - state.startTime) - state.totalPausedMs;
+}
+
+function uniqueId() {
+  return Date.now() + '_' + Math.random().toString(36).slice(2, 7);
+}
+
+/* ════════════════════════════════════════════════════════
+   ⑩ LOCAL STORAGE SERVICE
+════════════════════════════════════════════════════════ */
+function lsSaveSession() {
+  try {
+    const sess = {
+      subject: state.subject, year: state.year, attempt: state.attempt,
+      answers: state.answers, marks: state.marks,
+      startTime: state.startTime, totalPausedMs: state.totalPausedMs,
+      paused: state.paused, savedAt: Date.now(),
+    };
+    localStorage.setItem(LS.SESSION, JSON.stringify(sess));
+    return true;
+  } catch { return false; }
+}
+
+function lsClearSession() {
+  localStorage.removeItem(LS.SESSION);
+}
+
+function lsLoadSession() {
+  try { return JSON.parse(localStorage.getItem(LS.SESSION)); }
+  catch { return null; }
+}
+
+function lsSaveHistory(entry) {
+  const hist = lsLoadHistory();
+  const idx  = hist.findIndex(h => h.subject === entry.subject && h.year === entry.year && h.attempt === entry.attempt);
+  if (idx >= 0) hist.splice(idx, 1);
+  hist.unshift(entry);
+  if (hist.length > 300) hist.splice(300);
+  try { localStorage.setItem(LS.HISTORY, JSON.stringify(hist)); return true; }
+  catch { return false; }
+}
+
+function lsLoadHistory() {
+  try { return JSON.parse(localStorage.getItem(LS.HISTORY)) || []; }
+  catch { return []; }
+}
+
+function lsDeleteHistory(id) {
+  const hist = lsLoadHistory().filter(h => h.id !== id);
+  try { localStorage.setItem(LS.HISTORY, JSON.stringify(hist)); return true; }
+  catch { return false; }
+}
+
+/* ════════════════════════════════════════════════════════
+   ⑪ FIREBASE SERVICE
+════════════════════════════════════════════════════════ */
+async function fbSaveSession() {
+  if (!db) return;
+  try {
+    const sess = {
+      subject: state.subject, year: state.year, attempt: state.attempt,
+      answers: state.answers, marks: state.marks,
+      startTime: state.startTime, totalPausedMs: state.totalPausedMs,
+      paused: state.paused, updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    };
+    await dbPath().collection('sessions').doc('current').set(sess);
+  } catch(e) { console.warn('[FB] Session save failed:', e); }
+}
+
+async function fbSaveHistory(entry) {
+  if (!db) return false;
+  try {
+    const docId = String(entry.id);
+    const data  = { ...entry, updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
+    await dbPath().collection('history').doc(docId).set(data);
+    showSync('synced');
+    return true;
+  } catch(e) {
+    console.warn('[FB] History save failed:', e);
+    showSync('failed');
+    return false;
+  }
+}
+
+async function fbDeleteHistory(id) {
+  if (!db) return;
+  try {
+    await dbPath().collection('history').doc(String(id)).delete();
+  } catch(e) { console.warn('[FB] Delete failed:', e); }
+}
+
+async function fbLoadHistory() {
+  if (!db) return null;
+  try {
+    const snap = await dbPath().collection('history').orderBy('createdAt', 'desc').get();
+    return snap.docs.map(d => d.data());
+  } catch { return null; }
+}
+
+/* ════════════════════════════════════════════════════════
+   ⑫ UNIFIED SAVE SYSTEM
+════════════════════════════════════════════════════════ */
+function scheduleSave() {
+  showSync('saving');
+  // localStorage — fast (600ms)
+  clearTimeout(lsSaveDebounce);
+  lsSaveDebounce = setTimeout(() => {
+    lsSaveSession();
+    showSync(isOnline ? 'saved' : 'offline');
+  }, 600);
+  // Firebase — slower debounce (2500ms)
+  clearTimeout(fbSaveDebounce);
+  fbSaveDebounce = setTimeout(() => {
+    fbSaveSession();
+  }, 2500);
+}
+
+function saveSessionNow() {
+  lsSaveSession();
+  fbSaveSession();
+}
+
+/* ════════════════════════════════════════════════════════
+   ⑬ HOME SCREEN
+════════════════════════════════════════════════════════ */
+function initHome() {
+  // Subject pills
+  document.querySelectorAll('#subject-pills .pill').forEach(p => {
+    p.addEventListener('click', () => {
+      document.querySelectorAll('#subject-pills .pill').forEach(x => x.classList.remove('active'));
+      p.classList.add('active');
+      state.subject = p.dataset.value;
+      updateHomeInfo(); updateAttemptSelector(); checkResume();
+    });
+  });
+
+  // Year grid
+  buildYearGrid();
+  updateHomeInfo(); updateAttemptSelector(); checkResume();
+  renderRecentAttempts(); renderHomeStats();
+
+  document.getElementById('btn-start').addEventListener('click', onStartPaper);
+  document.getElementById('btn-history').addEventListener('click', () => showHistoryScreen('all'));
+}
+
+function buildYearGrid() {
+  const grid = document.getElementById('year-grid');
+  grid.innerHTML = '';
+  YEARS.forEach(y => {
+    const btn = document.createElement('button');
+    btn.className = 'year-btn' + (y === state.year ? ' active' : '');
+    btn.dataset.year = y;
+    btn.textContent = y;
+    const hist = lsLoadHistory();
+    if (hist.some(h => h.year === y)) {
+      const dot = document.createElement('span');
+      dot.className = 'has-dot'; btn.appendChild(dot);
+    }
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.year-btn').forEach(x => x.classList.remove('active'));
+      btn.classList.add('active');
+      state.year = y;
+      updateHomeInfo(); updateAttemptSelector(); checkResume();
+    });
+    grid.appendChild(btn);
+  });
+}
+
+function updateHomeInfo() {
+  const cfg = getPaperConfig(state.year);
+  document.getElementById('info-questions').textContent = cfg.questions;
+  const h = Math.floor(cfg.seconds / 3600);
+  const m = (cfg.seconds % 3600) / 60;
+  document.getElementById('info-duration').textContent =
+    h && m ? `${h}h ${m}m` : h ? `${h}h` : `${m}m`;
+}
+
+function updateAttemptSelector() {
+  const hist       = lsLoadHistory();
+  const existing   = hist.filter(h => h.subject === state.subject && h.year === state.year);
+  const nextAttempt = existing.length + 1;
+  const maxShow    = Math.max(nextAttempt, 3);
+  const container  = document.getElementById('attempt-btns');
+  container.innerHTML = '';
+
+  for (let a = 1; a <= maxShow; a++) {
+    const chip = document.createElement('button');
+    const hasEntry = existing.some(h => h.attempt === a);
+    chip.className = 'attempt-chip' + (hasEntry ? ' has-entry' : '') + (a === state.attempt ? ' active' : '');
+    chip.textContent = `A${a}`;
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.attempt-chip').forEach(x => x.classList.remove('active'));
+      chip.classList.add('active');
+      state.attempt = a;
+      checkResume();
+    });
+    container.appendChild(chip);
+  }
+  if (!state.attempt || state.attempt > maxShow) state.attempt = nextAttempt;
+  container.querySelectorAll('.attempt-chip').forEach((c, i) => {
+    c.classList.toggle('active', i + 1 === state.attempt);
+  });
+}
+
+function checkResume() {
+  const row  = document.getElementById('info-resume-row');
+  const sess = lsLoadSession();
+  if (sess && sess.subject === state.subject && sess.year === state.year) {
+    row.classList.add('visible');
+  } else {
+    row.classList.remove('visible');
+  }
+}
+
+function renderHomeStats() {
+  const hist = lsLoadHistory();
+  const row  = document.getElementById('home-stats-row');
+  if (!hist.length) { row.style.display = 'none'; return; }
+  row.style.display = 'grid';
+  const avg  = Math.round(hist.reduce((s,h)=>s+h.pct,0)/hist.length);
+  const best = Math.max(...hist.map(h=>h.pct));
+  document.getElementById('hs-papers').textContent = hist.length;
+  document.getElementById('hs-avg').textContent    = avg + '%';
+  document.getElementById('hs-best').textContent   = best + '%';
+}
+
+function renderRecentAttempts() {
+  const hist    = lsLoadHistory().slice(0, 8);
+  const section = document.getElementById('recent-section');
+  const row     = document.getElementById('recent-scroll');
+  if (!hist.length) { section.classList.remove('visible'); return; }
+  section.classList.add('visible');
+  row.innerHTML = '';
+  hist.forEach(h => {
+    const chip = document.createElement('div');
+    chip.className = 'recent-chip';
+    const cls = pctClass(h.pct);
+    chip.innerHTML = `
+      <div class="rc-subj">${h.subject}</div>
+      <div class="rc-year">${h.year} A${h.attempt||1}</div>
+      <div class="rc-pct ${cls}">${h.pct}%</div>`;
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('#subject-pills .pill').forEach(p => p.classList.toggle('active', p.dataset.value === h.subject));
+      document.querySelectorAll('.year-btn').forEach(b => b.classList.toggle('active', +b.dataset.year === h.year));
+      state.subject = h.subject; state.year = h.year;
+      updateHomeInfo(); updateAttemptSelector(); checkResume();
+    });
+    row.appendChild(chip);
+  });
+}
+
+/* ════════════════════════════════════════════════════════
+   ⑭ START / RESUME PAPER
+════════════════════════════════════════════════════════ */
+function onStartPaper() {
+  const sess = lsLoadSession();
+  if (sess && sess.subject === state.subject && sess.year === state.year) {
+    resumePaper(sess);
+    return;
+  }
+  // Check if attempt already has a history entry
+  const hist = lsLoadHistory();
+  const existing = hist.find(h => h.subject === state.subject && h.year === state.year && h.attempt === state.attempt);
+  if (existing) {
+    showModal({
+      icon: '📋', title: `Attempt ${state.attempt} exists`,
+      body: `You already completed <strong>${state.subject} ${state.year} A${state.attempt}</strong> with <strong>${existing.pct}%</strong>.<br><br>Starting fresh will create a new session for this attempt.`,
+      actions: [
+        { label: 'Start Fresh', style: 'primary', onClick: startFreshPaper },
+        { label: 'Cancel', style: 'ghost', onClick: () => {} },
+      ]
+    });
+    return;
+  }
+  startFreshPaper();
+}
+
+function startFreshPaper() {
+  const cfg = getPaperConfig(state.year);
+  state.answers        = Array(cfg.questions).fill('');
+  state.marks          = Array(cfg.questions).fill(0);
+  state.started        = true;
+  state.paused         = false;
+  state.startTime      = Date.now();
+  state.pausedAt       = null;
+  state.totalPausedMs  = 0;
+  state._elapsedAtComplete = 0;
+  state._editingEntry      = null;
+  state._focusMode         = false;
+  renderPaper();
+  showScreen('screen-paper');
+  startTimer();
+  scheduleSave();
+}
+
+function resumePaper(sess) {
+  state.subject       = sess.subject;
+  state.year          = sess.year;
+  state.attempt       = sess.attempt || 1;
+  state.answers       = sess.answers;
+  state.marks         = sess.marks || Array(sess.answers.length).fill(0);
+  state.startTime     = sess.startTime;
+  state.totalPausedMs = sess.totalPausedMs || 0;
+  state.paused        = false;
+  state.pausedAt      = null;
+  state.started       = true;
+  state._editingEntry = null;
+  state._focusMode    = false;
+  renderPaper();
+  showScreen('screen-paper');
+  startTimer();
+}
+
+/* ════════════════════════════════════════════════════════
+   ⑮ PAPER RENDER
+════════════════════════════════════════════════════════ */
+function renderPaper() {
+  document.getElementById('ph-subject').textContent = state.subject;
+  document.getElementById('ph-year').textContent    = state.year;
+  document.getElementById('ph-attempt').textContent = `A${state.attempt}`;
+
+  const list = document.getElementById('questions-list');
+  list.innerHTML = '';
+  const cfg = getPaperConfig(state.year);
+
+  for (let i = 0; i < cfg.questions; i++) {
+    const div = document.createElement('div');
+    div.className = 'question-item' + (state.answers[i] ? ' has-answer' : '');
+    div.id = `qi-${i}`;
+
+    const numSpan = document.createElement('span');
+    numSpan.className = 'q-num';
+    numSpan.textContent = i + 1;
+
+    const input = document.createElement('input');
+    input.type          = 'text';
+    input.className     = 'q-input';
+    input.placeholder   = 'Answer…';
+    input.value         = state.answers[i] || '';
+    input.autocomplete  = 'off';
+    input.autocorrect   = 'off';
+    input.autocapitalize = 'characters';
+    input.spellcheck    = false;
+    input.inputMode     = 'text';
+
+    input.addEventListener('input', () => {
+      state.answers[i] = input.value;
+      div.classList.toggle('has-answer', !!input.value.trim());
+      updateProgress();
+      updateNavCell(i);
+      updateFabCount();
+      scheduleSave();
+    });
+
+    input.addEventListener('focus', () => {
+      div.classList.add('focused');
+      currentNavCell = i;
+    });
+    input.addEventListener('blur', () => div.classList.remove('focused'));
+
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        const next = document.getElementById(`qi-${i + 1}`);
+        if (next) { next.querySelector('.q-input').focus(); next.scrollIntoView({ block: 'center' }); }
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        const prev = document.getElementById(`qi-${i - 1}`);
+        if (prev) { prev.querySelector('.q-input').focus(); prev.scrollIntoView({ block: 'center' }); }
+      }
+    });
+
+    div.appendChild(numSpan);
+    div.appendChild(input);
+    list.appendChild(div);
+  }
+
+  updateProgress();
+  renderNavGrid();
+  updateFabCount();
+
+  document.getElementById('btn-pause-resume').onclick = togglePause;
+  document.getElementById('btn-complete').onclick     = onCompletePaper;
+  document.getElementById('nav-fab-toggle').onclick   = openNavDrawer;
+  document.getElementById('nav-close').onclick        = closeNavDrawer;
+  document.getElementById('nav-overlay').onclick      = closeNavDrawer;
+
+  // Focus mode toggle
+  document.getElementById('btn-focus').onclick = () => {
+    state._focusMode = !state._focusMode;
+    document.body.classList.toggle('focus-mode', state._focusMode);
+    document.getElementById('btn-focus').style.color = state._focusMode ? 'var(--accent)' : '';
+  };
+
+  // Fullscreen toggle
+  document.getElementById('btn-fullscreen').onclick = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen?.();
+    } else {
+      document.exitFullscreen?.();
+    }
+  };
+
+  // Quick jump
+  document.getElementById('quick-jump-btn').onclick = quickJump;
+  document.getElementById('quick-jump-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') quickJump();
+  });
+}
+
+function quickJump() {
+  const val = parseInt(document.getElementById('quick-jump-input').value, 10);
+  const cfg = getPaperConfig(state.year);
+  if (val >= 1 && val <= cfg.questions) {
+    const el = document.getElementById(`qi-${val - 1}`);
+    if (el) {
+      closeNavDrawer();
+      setTimeout(() => {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(() => el.querySelector('.q-input').focus(), 300);
+      }, 120);
+    }
+  }
+}
+
+function updateProgress() {
+  const total    = state.answers.length;
+  const answered = state.answers.filter(a => a.trim() !== '').length;
+  document.getElementById('ph-progress-text').textContent = `${answered} / ${total}`;
+  document.getElementById('progress-bar-fill').style.width = `${(answered / total) * 100}%`;
+}
+
+function updateFabCount() {
+  const answered = state.answers.filter(a => a.trim()).length;
+  document.getElementById('fab-count').textContent = answered + '/' + state.answers.length;
+}
+
+/* ════════════════════════════════════════════════════════
+   ⑯ TIMER
+════════════════════════════════════════════════════════ */
+function startTimer() {
+  clearInterval(timerInterval);
+  renderTimer();
+  timerInterval = setInterval(renderTimer, 1000);
+}
+
+function renderTimer() {
+  const cfg       = getPaperConfig(state.year);
+  const elapsed   = elapsedMs();
+  const remaining = cfg.seconds * 1000 - elapsed;
+  const el        = document.getElementById('timer-display');
+
+  if (remaining >= 0) {
+    el.className    = 'timer-display normal';
+    el.textContent  = formatMs(remaining);
+  } else {
+    el.className    = 'timer-display overtime';
+    el.textContent  = '−' + formatMs(-remaining);
+  }
+}
+
+function togglePause() {
+  const btn = document.getElementById('btn-pause-resume');
+  if (!state.paused) {
+    state.paused   = true;
+    state.pausedAt = Date.now();
+    btn.textContent = '▶';
+    clearInterval(timerInterval);
+  } else {
+    state.totalPausedMs += Date.now() - (state.pausedAt || Date.now());
+    state.paused   = false;
+    state.pausedAt = null;
+    btn.textContent = '⏸';
+    startTimer();
+  }
+  scheduleSave();
+}
+
+/* ════════════════════════════════════════════════════════
+   ⑰ NAVIGATOR DRAWER
+════════════════════════════════════════════════════════ */
+function renderNavGrid() {
+  const grid = document.getElementById('nav-grid');
+  grid.innerHTML = '';
+  state.answers.forEach((ans, i) => {
+    const cell = document.createElement('button');
+    cell.className = 'nav-cell' + (ans.trim() ? ' answered' : '') + (i === currentNavCell ? ' current' : '');
+    cell.textContent = i + 1;
+    cell.addEventListener('click', () => {
+      closeNavDrawer();
+      setTimeout(() => {
+        const el = document.getElementById(`qi-${i}`);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          setTimeout(() => el.querySelector('.q-input').focus(), 280);
+        }
+      }, 140);
+    });
+    grid.appendChild(cell);
+  });
+}
+
+function updateNavCell(i) {
+  const cells = document.querySelectorAll('.nav-cell');
+  if (cells[i]) cells[i].classList.toggle('answered', !!state.answers[i]?.trim());
+}
+
+function openNavDrawer() {
+  renderNavGrid();
+  document.getElementById('nav-drawer').classList.add('open');
+  document.getElementById('nav-overlay').classList.add('open');
+  document.getElementById('quick-jump-input').value = '';
+}
+
+function closeNavDrawer() {
+  document.getElementById('nav-drawer').classList.remove('open');
+  document.getElementById('nav-overlay').classList.remove('open');
+}
+
+/* ════════════════════════════════════════════════════════
+   ⑱ COMPLETE PAPER
+════════════════════════════════════════════════════════ */
+function onCompletePaper() {
+  const answered  = state.answers.filter(a => a.trim()).length;
+  const total     = state.answers.length;
+  const pctAnswered = Math.round((answered / total) * 100);
+
+  if (answered === 0) {
+    showModal({
+      icon: '⚠️', title: 'No answers entered',
+      body: 'You haven\'t entered any answers yet. Are you sure you want to complete the paper?',
+      actions: [
+        { label: 'Yes, complete anyway', style: 'danger', onClick: completePaper },
+        { label: 'Go back', style: 'ghost', onClick: () => {} },
+      ]
+    });
+    return;
+  }
+
+  if (pctAnswered < 50) {
+    showModal({
+      icon: '⚠️', title: `Only ${answered}/${total} answered`,
+      body: `You've answered <strong>${pctAnswered}%</strong> of questions. ${total - answered} answers are still blank.<br><br>You can continue and fill them in, or complete now.`,
+      actions: [
+        { label: 'Complete now', style: 'primary', onClick: completePaper },
+        { label: 'Keep filling in', style: 'ghost', onClick: () => {} },
+      ]
+    });
+    return;
+  }
+
+  completePaper();
+}
+
+function completePaper() {
+  clearInterval(timerInterval);
+  state._elapsedAtComplete = elapsedMs();
+  lsClearSession();
+  document.body.classList.remove('focus-mode');
+  renderMarkingScreen();
+  showScreen('screen-marking');
+}
+
+/* ════════════════════════════════════════════════════════
+   ⑲ MARKING SCREEN
+════════════════════════════════════════════════════════ */
+function renderMarkingScreen() {
+  document.getElementById('marking-meta').textContent =
+    `${state.subject} · ${state.year} · A${state.attempt}`;
+
+  // If re-marking, preserve existing marks; otherwise reset
+  if (!state._editingEntry) {
+    state.marks = Array(state.answers.length).fill(0);
+  }
+
+  const list = document.getElementById('marking-list');
+  list.innerHTML = '';
+
+  state.answers.forEach((ans, i) => {
+    const div = document.createElement('div');
+    div.className = 'mark-item';
+    div.id = `mi-${i}`;
+
+    if (state.marks[i] === 1)       div.classList.add('state-correct');
+    else if (state.marks[i] === -1) div.classList.add('state-incorrect');
+
+    const numSpan = document.createElement('span');
+    numSpan.className = 'mark-num';
+    numSpan.textContent = i + 1;
+
+    const ansSpan = document.createElement('span');
+    ansSpan.className = 'mark-answer' + (ans.trim() ? ' has-text' : '');
+    ansSpan.textContent = ans.trim() || '(blank)';
+
+    const statusSpan = document.createElement('span');
+    statusSpan.className = 'mark-status';
+    statusSpan.id = `mstatus-${i}`;
+    statusSpan.textContent = state.marks[i] === 1 ? '✓' : state.marks[i] === -1 ? '✗' : '○';
+
+    div.appendChild(numSpan);
+    div.appendChild(ansSpan);
+    div.appendChild(statusSpan);
+
+    // Tap cycle: 1=correct, 2=incorrect, 3=reset
+    let tapCount = 0, tapTimer = null;
+    div.addEventListener('click', () => {
+      tapCount++;
+      clearTimeout(tapTimer);
+      tapTimer = setTimeout(() => {
+        const nextVal = tapCount === 1 ? 1 : tapCount === 2 ? -1 : 0;
+        applyMark(i, nextVal);
+        tapCount = 0;
+      }, 260);
+    });
+
+    list.appendChild(div);
+  });
+
+  updateMarkingSummary();
+
+  document.getElementById('btn-marking-done').onclick = () => {
+    saveAndShowResults();
+  };
+}
+
+function applyMark(i, val) {
+  state.marks[i] = val;
+  const div  = document.getElementById(`mi-${i}`);
+  const span = document.getElementById(`mstatus-${i}`);
+  div.classList.remove('state-correct', 'state-incorrect');
+  if (val === 1)       { div.classList.add('state-correct');   span.textContent = '✓'; }
+  else if (val === -1) { div.classList.add('state-incorrect');  span.textContent = '✗'; }
+  else                 {                                        span.textContent = '○'; }
+  updateMarkingSummary();
+}
+
+function updateMarkingSummary() {
+  const correct   = state.marks.filter(m => m === 1).length;
+  const incorrect = state.marks.filter(m => m === -1).length;
+  const unmarked  = state.marks.filter(m => m === 0).length;
+  const pct       = (correct + incorrect) > 0
+    ? Math.round((correct / state.marks.length) * 100) : null;
+  document.getElementById('ms-correct').textContent   = correct;
+  document.getElementById('ms-incorrect').textContent = incorrect;
+  document.getElementById('ms-unmarked').textContent  = unmarked;
+  document.getElementById('ms-pct').textContent       = pct !== null ? pct + '%' : '—';
+}
+
+/* ════════════════════════════════════════════════════════
+   ⑳ RESULTS & SAVE
+════════════════════════════════════════════════════════ */
+async function saveAndShowResults() {
+  const total     = state.marks.length;
+  const correct   = state.marks.filter(m => m === 1).length;
+  const incorrect = state.marks.filter(m => m === -1).length;
+  const unmarked  = state.marks.filter(m => m === 0).length;
+  const pct       = total > 0 ? Math.round((correct / total) * 100) : 0;
+  const cfg       = getPaperConfig(state.year);
+  const elapsed   = state._elapsedAtComplete || 0;
+  const overtime  = Math.max(0, elapsed - cfg.seconds * 1000);
+
+  const entry = {
+    id:            state._editingEntry?.id || uniqueId(),
+    subject:       state.subject,
+    year:          state.year,
+    attempt:       state.attempt,
+    answers:       [...state.answers],
+    marks:         [...state.marks],
+    questionCount: total,
+    correctCount:  correct,
+    incorrectCount: incorrect,
+    unmarkedCount: unmarked,
+    pct,
+    percentage:    pct,
+    elapsed,
+    overtime,
+    date:          state._editingEntry?.date || new Date().toISOString(),
+    createdAt:     state._editingEntry?.createdAt || Date.now(),
+    updatedAt:     Date.now(),
+    isCompleted:   true,
+  };
+
+  // Always save to localStorage first (never lose data)
+  lsSaveHistory(entry);
+  showSync('saved');
+
+  // Then try Firebase
+  if (db) {
+    fbSaveHistory(entry); // async, non-blocking
+  }
+
+  showResultsScreen(entry);
+}
+
+function showResultsScreen(entry) {
+  const { subject, year, attempt, pct, correct: c, questionCount: total,
+          incorrect: inc, unmarkedCount: unm, elapsed, overtime } = entry;
+
+  document.getElementById('res-subject').textContent       = subject;
+  document.getElementById('res-year').textContent          = year;
+  document.getElementById('res-attempt-label').textContent = `Attempt ${attempt}`;
+  document.getElementById('res-pct').textContent           = pct + '%';
+  document.getElementById('res-frac').textContent          = `${c}/${total}`;
+  document.getElementById('res-correct').textContent       = c;
+  document.getElementById('res-incorrect').textContent     = inc;
+  document.getElementById('res-unmarked').textContent      = unm;
+  document.getElementById('res-time').textContent          = formatMs(elapsed);
+  document.getElementById('res-attempt').textContent       = `A${attempt}`;
+  document.getElementById('res-date').textContent          = new Date(entry.date || entry.createdAt).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+
+  const otRow = document.getElementById('res-overtime-row');
+  if (overtime > 0) {
+    otRow.style.display = 'flex';
+    document.getElementById('res-overtime').textContent = '+' + formatMs(overtime);
+  } else {
+    otRow.style.display = 'none';
+  }
+
+  // Performance label
+  let perfClass, perfText;
+  if (pct >= 90)      { perfClass='perf-excellent'; perfText='Excellent ✨'; }
+  else if (pct >= 75) { perfClass='perf-strong';    perfText='Strong'; }
+  else if (pct >= 60) { perfClass='perf-average';   perfText='Average'; }
+  else                { perfClass='perf-needs-impr'; perfText='Needs Work'; }
+  const perfEl = document.getElementById('res-perf-label');
+  perfEl.className   = 'perf-label ' + perfClass;
+  perfEl.textContent = perfText;
+
+  // Ring animation
+  const circum = 2 * Math.PI * 50;
+  const ring   = document.getElementById('ring-fill');
+  ring.style.stroke           = pct >= 90 ? 'var(--green)' : pct >= 75 ? 'var(--accent)' : pct >= 60 ? 'var(--amber)' : 'var(--red)';
+  ring.style.strokeDashoffset = circum;
+  requestAnimationFrame(() => setTimeout(() => {
+    ring.style.strokeDashoffset = circum - (pct / 100) * circum;
+  }, 80));
+
+  document.getElementById('btn-res-home').onclick = () => {
+    showScreen('screen-home');
+    buildYearGrid(); renderRecentAttempts(); renderHomeStats();
+    updateAttemptSelector(); checkResume();
+  };
+  document.getElementById('btn-res-history').onclick = () => showHistoryScreen('all');
+
+  showScreen('screen-results');
+}
+
+/* ════════════════════════════════════════════════════════
+   ㉑ HISTORY SCREEN
+════════════════════════════════════════════════════════ */
+function showHistoryScreen(tab) {
+  document.getElementById('btn-history-back').onclick = () => showScreen('screen-home');
+
+  document.querySelectorAll('.h-tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.tab === tab);
+    t.onclick = () => {
+      document.querySelectorAll('.h-tab').forEach(x => x.classList.remove('active'));
+      t.classList.add('active');
+      renderHistoryTab(t.dataset.tab);
+    };
+  });
+
+  renderHistoryTab(tab);
+  showScreen('screen-history');
+}
+
+function renderHistoryTab(tab) {
+  const container = document.getElementById('history-tab-content');
+  container.innerHTML = '';
+
+  if (tab === 'analytics') {
+    renderAnalyticsTab(container);
+    return;
+  }
+
+  const all  = lsLoadHistory();
+  const hist = tab === 'all' ? all : all.filter(h => h.subject === tab);
+
+  // Stats bar
+  const statsBar = document.createElement('div');
+  statsBar.className = 'history-stats-bar';
+  if (hist.length > 0) {
+    const avg  = Math.round(hist.reduce((s,h)=>s+h.pct,0)/hist.length);
+    const best = Math.max(...hist.map(h=>h.pct));
+    [
+      { label:'Papers', val: hist.length },
+      { label:'Average', val: avg + '%' },
+      { label:'Best', val: best + '%' },
+    ].forEach(c => {
+      const chip = document.createElement('div');
+      chip.className = 'hist-stat-chip';
+      chip.innerHTML = `<span class="hs-label">${c.label}</span><span class="hs-val">${c.val}</span>`;
+      statsBar.appendChild(chip);
+    });
+    if (tab === 'all') {
+      ['IQ','GK'].forEach(subj => {
+        const sub = all.filter(h=>h.subject===subj);
+        if (sub.length) {
+          const chip = document.createElement('div');
+          chip.className = 'hist-stat-chip';
+          const a = Math.round(sub.reduce((s,h)=>s+h.pct,0)/sub.length);
+          chip.innerHTML = `<span class="hs-label">${subj} Avg</span><span class="hs-val">${a}%</span>`;
+          statsBar.appendChild(chip);
+        }
+      });
+    }
+  }
+  container.appendChild(statsBar);
+
+  if (!hist.length) {
+    const empty = document.createElement('div');
+    empty.className = 'history-empty';
+    empty.innerHTML = `<div class="empty-icon">📋</div><p>No attempts yet.</p><p class="empty-sub">Complete a paper to see your history.</p>`;
+    container.appendChild(empty);
+    return;
+  }
+
+  const list = document.createElement('div');
+  list.className = 'history-list';
+
+  hist.forEach(h => {
+    const pct    = h.pct || h.percentage || 0;
+    const cls    = pctClass(pct);
+    const date   = new Date(h.date || h.createdAt || Date.now()).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+    const timeStr = h.elapsed ? formatMs(h.elapsed) : '—';
+    const total  = h.questionCount || h.total || h.answers?.length || '?';
+    const correct = h.correctCount ?? h.correct ?? '?';
+
+    const item = document.createElement('div');
+    item.className = 'hist-item';
+
+    let otStr = '';
+    if (h.overtime > 0) otStr = ` · +${formatMs(h.overtime)} OT`;
+
+    item.innerHTML = `
+      <div class="hist-item-left">
+        <span class="hist-subject-badge">${h.subject}</span>
+        <div class="hist-year">${h.year} · A${h.attempt || 1}</div>
+        <div class="hist-sub">${timeStr}${otStr}</div>
+        <div class="hist-date">${date}</div>
+      </div>
+      <div class="hist-item-right">
+        <div class="hist-score">${correct}<span style="color:var(--text-dim);font-size:12px">/${total}</span></div>
+        <div class="hist-pct ${cls}">${pct}%</div>
+      </div>`;
+
+    const actions = document.createElement('div');
+    actions.className = 'hist-item-actions';
+    actions.innerHTML = `
+      <button class="hist-action-btn reopen" data-action="reopen">✏ Edit / Re-mark</button>
+      <button class="hist-action-btn" data-action="remark">📋 View Answers</button>
+      <button class="hist-action-btn danger" data-action="delete">🗑 Delete</button>`;
+
+    item.addEventListener('click', e => {
+      if (e.target.closest('[data-action]')) return;
+      item.classList.toggle('expanded');
+    });
+
+    // Re-open (edit answers + re-mark)
+    actions.querySelector('[data-action="reopen"]').addEventListener('click', e => {
+      e.stopPropagation();
+      reopenAttempt(h);
+    });
+
+    // View answers only (go to marking with existing marks)
+    actions.querySelector('[data-action="remark"]').addEventListener('click', e => {
+      e.stopPropagation();
+      remarklAttempt(h);
+    });
+
+    // Delete with confirmation
+    actions.querySelector('[data-action="delete"]').addEventListener('click', e => {
+      e.stopPropagation();
+      showModal({
+        icon: '🗑',
+        title: 'Delete this attempt?',
+        body: `This will permanently delete <strong>${h.subject} ${h.year} A${h.attempt || 1}</strong> (${pct}%). This cannot be undone.`,
+        actions: [
+          { label: 'Delete', style: 'danger', onClick: () => {
+            lsDeleteHistory(h.id);
+            fbDeleteHistory(h.id);
+            renderHistoryTab(tab);
+            renderHomeStats();
+            buildYearGrid();
+          }},
+          { label: 'Cancel', style: 'ghost', onClick: () => {} },
+        ]
+      });
+    });
+
+    list.appendChild(item);
+    list.appendChild(actions);
+  });
+
+  container.appendChild(list);
+}
+
+function reopenAttempt(h) {
+  // Reopen paper with existing answers for editing
+  state.subject       = h.subject;
+  state.year          = h.year;
+  state.attempt       = h.attempt || 1;
+  state.answers       = [...(h.answers || Array(h.questionCount || h.total || 50).fill(''))];
+  state.marks         = [...(h.marks || [])];
+  state.startTime     = Date.now() - (h.elapsed || 0);
+  state.totalPausedMs = 0;
+  state.paused        = true;
+  state.pausedAt      = Date.now();
+  state.started       = true;
+  state._editingEntry = h;
+  state._elapsedAtComplete = h.elapsed || 0;
+  state._focusMode    = false;
+  renderPaper();
+  showScreen('screen-paper');
+  // Don't start timer automatically when re-opening
+  renderTimer();
+}
+
+function remarklAttempt(h) {
+  // Go straight to marking screen with existing data
+  state.subject       = h.subject;
+  state.year          = h.year;
+  state.attempt       = h.attempt || 1;
+  state.answers       = [...(h.answers || [])];
+  state.marks         = [...(h.marks || Array((h.answers||[]).length).fill(0))];
+  state._elapsedAtComplete = h.elapsed || 0;
+  state._editingEntry = h;
+  renderMarkingScreen();
+  showScreen('screen-marking');
+}
+
+/* ════════════════════════════════════════════════════════
+   ㉒ ANALYTICS TAB
+════════════════════════════════════════════════════════ */
+function renderAnalyticsTab(container) {
+  const hist = lsLoadHistory();
+  const body = document.createElement('div');
+  body.className = 'analytics-body';
+
+  if (!hist.length) {
+    body.innerHTML = `<div class="history-empty"><div class="empty-icon">📊</div><p>No data yet.</p><p class="empty-sub">Complete papers to see analytics.</p></div>`;
+    container.appendChild(body);
+    return;
+  }
+
+  // ── Overview ──
+  const avgAll  = Math.round(hist.reduce((s,h)=>s+h.pct,0)/hist.length);
+  const best    = Math.max(...hist.map(h=>h.pct));
+  const last5   = hist.slice(0,5);
+  const avg5    = last5.length ? Math.round(last5.reduce((s,h)=>s+h.pct,0)/last5.length) : 0;
+  const trend   = avg5 - avgAll;
+
+  const overCard = makeCard('Overview', '');
+  const grid = el('div', 'trend-grid');
+  [
+    { val: avgAll+'%',  label: 'All-time Avg', cls: '' },
+    { val: best+'%',    label: 'Best Score',   cls: '' },
+    { val: (trend >= 0 ? '↑' : '↓') + Math.abs(trend) + '%', label: 'Recent Trend', cls: trend >= 0 ? 'up' : 'down' },
+  ].forEach(({val,label,cls}) => {
+    const box = el('div','trend-box');
+    box.innerHTML = `<div class="trend-val ${cls}">${val}</div><div class="trend-label">${label}</div>`;
+    grid.appendChild(box);
+  });
+  overCard.appendChild(grid);
+  body.appendChild(overCard);
+
+  // ── Subject Comparison ──
+  const iqH = hist.filter(h=>h.subject==='IQ');
+  const gkH = hist.filter(h=>h.subject==='GK');
+  if (iqH.length || gkH.length) {
+    const subjCard = makeCard('Subject Comparison', 'Average score per subject');
+    const subjGrid = el('div','subj-compare');
+    [{label:'IQ',data:iqH},{label:'GK',data:gkH}].forEach(({label,data}) => {
+      const box = el('div','subj-box');
+      const avg = data.length ? Math.round(data.reduce((s,h)=>s+h.pct,0)/data.length) : null;
+      const color = avg===null ? 'var(--text-dim)' : avg>=75?'var(--green)':avg>=60?'var(--amber)':'var(--red)';
+      box.innerHTML = `
+        <div class="subj-box-label">${label}</div>
+        <div class="subj-box-avg" style="color:${color}">${avg!==null?avg+'%':'—'}</div>
+        <div class="subj-box-count">${data.length} paper${data.length!==1?'s':''}</div>`;
+      subjGrid.appendChild(box);
+    });
+    subjCard.appendChild(subjGrid);
+    body.appendChild(subjCard);
+  }
+
+  // ── Score Trend Chart ──
+  if (hist.length >= 2) {
+    const chartCard = makeCard('Score Trend', 'Most recent 12 attempts');
+    const chartArea = el('div','chart-area');
+    chartArea.innerHTML = buildBarChart([...hist].slice(0,12).reverse());
+    chartCard.appendChild(chartArea);
+    body.appendChild(chartCard);
+  }
+
+  // ── Attempt Comparison (same subject+year across attempts) ──
+  const groups = {};
+  hist.forEach(h => {
+    const key = `${h.subject}-${h.year}`;
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(h);
+  });
+  const multiAttempt = Object.entries(groups).filter(([,entries]) => entries.length > 1);
+  if (multiAttempt.length > 0) {
+    const compCard = makeCard('Attempt Comparison', 'Papers done multiple times');
+    const compWrap = el('div','comp-table');
+    multiAttempt.slice(0,4).forEach(([key, entries]) => {
+      const sorted = [...entries].sort((a,b)=>a.attempt-b.attempt);
+      const hdr = el('div');
+      hdr.style = 'font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.08em;margin:10px 0 6px;';
+      hdr.textContent = `${sorted[0].subject} ${sorted[0].year}`;
+      compWrap.appendChild(hdr);
+      sorted.forEach(e => {
+        const row = el('div','comp-row');
+        const barColor = e.pct>=75?'var(--green)':e.pct>=60?'var(--amber)':'var(--red)';
+        row.innerHTML = `
+          <span class="comp-label">A${e.attempt}</span>
+          <div class="comp-bar-wrap"><div class="comp-bar-fill" style="width:${e.pct}%;background:${barColor}"></div></div>
+          <span class="comp-pct" style="color:${barColor}">${e.pct}%</span>`;
+        compWrap.appendChild(row);
+      });
+    });
+    compCard.appendChild(compWrap);
+    body.appendChild(compCard);
+  }
+
+  // ── Insights ──
+  const insights = generateInsights(hist);
+  if (insights.length) {
+    const insCard = makeCard('Session Insights', '');
+    const insList = el('div','insights-list');
+    insights.forEach(({icon,text}) => {
+      const item = el('div','insight-item');
+      item.innerHTML = `<span class="insight-icon">${icon}</span><span class="insight-text">${text}</span>`;
+      insList.appendChild(item);
+    });
+    insCard.appendChild(insList);
+    body.appendChild(insCard);
+  }
+
+  container.appendChild(body);
+}
+
+function makeCard(title, sub) {
+  const card = el('div','analytics-card');
+  const hdr  = el('div','analytics-card-header');
+  hdr.innerHTML = `<div class="analytics-card-title">${title}</div>${sub?`<div class="analytics-card-sub">${sub}</div>`:''}`;
+  card.appendChild(hdr);
+  return card;
+}
+
+function el(tag, cls='') {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  return e;
+}
+
+function buildBarChart(entries) {
+  if (!entries.length) return '';
+  const W = 340, H = 110, barW = Math.min(20, Math.floor((W-40)/entries.length)-3);
+  const spacing = (W-40) / entries.length;
+  const lines = [];
+
+  [0,25,50,75,100].forEach(v => {
+    const y = H - (v/100)*H;
+    lines.push(`<line class="chart-gridline" x1="0" y1="${y}" x2="${W}" y2="${y}"/>`);
+    lines.push(`<text class="chart-label" x="-4" y="${y+3}" text-anchor="end">${v}</text>`);
+  });
+
+  entries.forEach((h,i) => {
+    const pct  = h.pct || h.percentage || 0;
+    const x    = i * spacing + spacing/2;
+    const barH = (pct/100)*H;
+    const y    = H - barH;
+    const color = h.subject === 'IQ' ? 'var(--accent)' : 'var(--green)';
+    const label = `${h.year} A${h.attempt||1}`;
+    lines.push(`<rect class="chart-bar" x="${x-barW/2}" y="${y}" width="${barW}" height="${barH}" fill="${color}" rx="3" opacity="0.82"/>`);
+    lines.push(`<text class="chart-val" x="${x}" y="${y-4}" text-anchor="middle">${pct}%</text>`);
+    lines.push(`<text class="chart-label" x="${x}" y="${H+14}" text-anchor="middle" transform="rotate(-42,${x},${H+14})">${label}</text>`);
+  });
+
+  lines.push(`<rect x="10" y="${H+44}" width="10" height="10" fill="var(--accent)" rx="2"/>`);
+  lines.push(`<text class="chart-label" x="24" y="${H+52}">IQ</text>`);
+  lines.push(`<rect x="46" y="${H+44}" width="10" height="10" fill="var(--green)" rx="2"/>`);
+  lines.push(`<text class="chart-label" x="60" y="${H+52}">GK</text>`);
+
+  return `<svg class="chart-svg" viewBox="-36 -14 ${W+50} ${H+74}">${lines.join('')}</svg>`;
+}
+
+function generateInsights(hist) {
+  const insights = [];
+  if (hist.length < 2) return insights;
+
+  const iq = hist.filter(h=>h.subject==='IQ');
+  const gk = hist.filter(h=>h.subject==='GK');
+
+  // Subject gap
+  if (iq.length >= 2 && gk.length >= 2) {
+    const iqAvg = Math.round(iq.reduce((s,h)=>s+h.pct,0)/iq.length);
+    const gkAvg = Math.round(gk.reduce((s,h)=>s+h.pct,0)/gk.length);
+    const diff  = iqAvg - gkAvg;
+    if (Math.abs(diff) >= 5) {
+      const weaker = diff > 0 ? 'GK' : 'IQ';
+      const weakAvg = diff > 0 ? gkAvg : iqAvg;
+      insights.push({ icon: '🎯', text: `<strong>${weaker} needs focus</strong> — your ${weaker} average is ${weakAvg}%, ${Math.abs(diff)} points lower than your ${diff>0?'IQ':'GK'} average.` });
+    }
+  }
+
+  // Improvement trend
+  if (hist.length >= 4) {
+    const recent3  = hist.slice(0,3).map(h=>h.pct);
+    const older3   = hist.slice(3,6).map(h=>h.pct);
+    const rAvg = Math.round(recent3.reduce((a,b)=>a+b,0)/recent3.length);
+    const oAvg = Math.round(older3.reduce((a,b)=>a+b,0)/older3.length);
+    const diff = rAvg - oAvg;
+    if (diff >= 5)       insights.push({ icon:'🚀', text: `<strong>Accuracy improving</strong> — last 3 attempts averaged ${rAvg}%, up ${diff} points from before. Keep it up!` });
+    else if (diff <= -5) insights.push({ icon:'⚠️', text: `<strong>Score slipping</strong> — last 3 attempts averaged ${rAvg}%, down ${Math.abs(diff)} points. Consider reviewing weak areas.` });
+    else                 insights.push({ icon:'⟳',  text: `<strong>Consistent performance</strong> — your recent scores are stable around ${rAvg}%.` });
+  }
+
+  // Overtime
+  const otAttempts = hist.filter(h=>h.overtime>0);
+  if (hist.length >= 3) {
+    const recentOT = hist.slice(0,3).filter(h=>h.overtime>0).length;
+    insights.push({
+      icon: recentOT >= 2 ? '⏱️' : '✅',
+      text: recentOT >= 2
+        ? `<strong>Time management</strong> — ${recentOT}/3 recent papers went overtime. Try pacing 1 question/72 seconds.`
+        : `<strong>Good pacing</strong> — you're finishing within time more often.`
+    });
+  }
+
+  // Best result
+  if (hist.length >= 3) {
+    const best = hist.reduce((a,b) => (a.pct>b.pct?a:b));
+    insights.push({ icon:'🏆', text: `Best result so far: <strong>${best.pct}%</strong> on ${best.subject} ${best.year}, Attempt ${best.attempt||1}.` });
+  }
+
+  return insights;
+}
+
+/* ════════════════════════════════════════════════════════
+   ㉓ THEME
+════════════════════════════════════════════════════════ */
+function initTheme() {
+  const saved = localStorage.getItem(LS.THEME) || 'dark';
+  applyTheme(saved);
+  document.getElementById('theme-toggle').addEventListener('click', () => {
+    const next = document.body.classList.contains('light') ? 'dark' : 'light';
+    applyTheme(next);
+    localStorage.setItem(LS.THEME, next);
+  });
+}
+
+function applyTheme(theme) {
+  const icon = document.getElementById('theme-toggle');
+  if (theme === 'light') {
+    document.body.classList.add('light');
+    icon.textContent = '☾';
+  } else {
+    document.body.classList.remove('light');
+    icon.textContent = '☀';
+  }
+  const tc = document.querySelector('meta[name="theme-color"]');
+  if (tc) tc.content = theme === 'light' ? '#f0f0f5' : '#0a0a0d';
+}
+
+/* ════════════════════════════════════════════════════════
+   ㉔ CRASH RECOVERY
+════════════════════════════════════════════════════════ */
+function checkCrashRecovery() {
+  const sess = lsLoadSession();
+  if (!sess) return;
+  if (sess.answers && sess.answers.some(a => a.trim())) {
+    // Pre-select the saved subject/year
+    state.subject = sess.subject;
+    state.year    = sess.year;
+    state.attempt = sess.attempt || 1;
+    document.querySelectorAll('#subject-pills .pill').forEach(p =>
+      p.classList.toggle('active', p.dataset.value === sess.subject));
+    document.querySelectorAll('.year-btn').forEach(b =>
+      b.classList.toggle('active', +b.dataset.year === sess.year));
+    updateHomeInfo(); updateAttemptSelector(); checkResume();
+  }
+}
+
+/* ════════════════════════════════════════════════════════
+   ㉕ BEFORE UNLOAD — emergency save
+════════════════════════════════════════════════════════ */
+window.addEventListener('beforeunload', () => {
+  if (state.started && !state._elapsedAtComplete) {
+    lsSaveSession();
+  }
+});
+
+/* ════════════════════════════════════════════════════════
+   ㉖ BOOT
+════════════════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+  initFirebase();
+  initTheme();
+  updateOfflineBanner();
+  initHome();
+  checkCrashRecovery();
+  showScreen('screen-home');
+});
+</script>
 </body>
 </html>
